@@ -1,0 +1,20 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+       http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <include file="db/changelog/v1.0/001-base-entities.xml"/>
+    <include file="db/changelog/v1.0/002-create-users-table.xml"/>
+    <include file="db/changelog/v1.0/003-create-user_role-table.xml"/>
+    <include file="db/changelog/v1.0/004-create-user_roles-mapping.xml"/>
+    <include file="db/changelog/v1.0/005-rename-user-roles-mapping-to-users-roles-mapping.xml"/>
+    <include file="db/changelog/v1.0/006-create-budgets-table.xml"/>
+    <include file="db/changelog/v1.0/007-rename-user_role-to-users_roles.xml"/>
+    <include file="db/changelog/v1.0/008-create-categories-table.xml"/>
+    <include file="db/changelog/v1.0/009-alter-password-column-type.xml"/>
+    <include file="db/changelog/v1.0/010-create-currencies-table.xml"/>
+    <include file="db/changelog/v1.0/011-create-ex_rates-table.xml"/>
+    <include file="db/changelog/v1.0/012-create-expenses-table.xml"/>
+    <include file="db/changelog/v1.0/013-create-user-preferences-table.xml"/>
+
+</databaseChangeLog>
