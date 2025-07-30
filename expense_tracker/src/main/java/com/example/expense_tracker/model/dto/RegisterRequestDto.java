@@ -20,27 +20,27 @@ import java.util.List;
 @AllArgsConstructor
 public class RegisterRequestDto {
 
-    @Email
-    @NotBlank
+    @Email(message = "Please provide a valid email address")
+    @NotBlank(message = "Email is required")
     @UniqueEmail
     private String email;
 
-    @NotBlank
-    @Size(min = 3, max = 20)
+    @NotBlank(message = "First name is required")
+    @Size(min = 3, max = 20, message = "First name must be between 3 and 20 characters")
     private String firstname;
 
-    @NotBlank
-    @Size(min = 3, max = 20)
+    @NotBlank(message = "Last name is required")
+    @Size(min = 3, max = 20, message = "Last name must be between 3 and 20 characters")
     private String lastname;
 
-    @NotBlank
-    @Size(min = 8)
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
-    @NotBlank
-    @Size(min = 8)
+    @NotBlank(message = "Password confirmation is required")
+    @Size(min = 8, message = "Password confirmation must be at least 8 characters long")
     private String confirmPassword;
 
-    @NotEmpty
-    private List<UserRoleDto> userRoles;
+    @NotEmpty(message = "At least one role must be selected")
+    private List<String> userRoles;
 }

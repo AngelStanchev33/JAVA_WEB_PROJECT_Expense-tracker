@@ -1,7 +1,7 @@
 package com.example.expense_tracker.service.impl;
 
 import com.example.expense_tracker.model.entity.UserEntity;
-import com.example.expense_tracker.model.entity.enums.UserRoleEnum;
+import com.example.expense_tracker.model.enums.UserRoleEnum;
 import com.example.expense_tracker.model.user.ExpenseTrackerUserDetails;
 import com.example.expense_tracker.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,6 +1,6 @@
 package com.example.expense_tracker.model.entity;
 
-import com.example.expense_tracker.model.entity.enums.CategoryEnum;
+import com.example.expense_tracker.model.enums.CategoryEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

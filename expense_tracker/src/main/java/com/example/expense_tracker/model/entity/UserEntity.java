@@ -4,13 +4,17 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 
 import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity extends BaseEntity {
 
     @NotBlank
@@ -43,19 +47,4 @@ public class UserEntity extends BaseEntity {
                inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<UserRoleEntity> roles;
 
-    public String getEmail() { return email; }
-    public String getFirstname() { return firstname; }
-    public String getPassword() { return password; }
-    public String getLastname() { return lastname; }
-    public String getImageUrl() { return imageUrl; }
-    public boolean isActive() { return isActive; }
-    public List<UserRoleEntity> getRoles() { return roles; }
-
-    public void setEmail(String email) { this.email = email; }
-    public void setFirstname(String firstname) { this.firstname = firstname; }
-    public void setPassword(String password) { this.password = password; }
-    public void setLastname(String lastname) { this.lastname = lastname; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-    public void setActive(boolean active) { isActive = active; }
-    public void setRoles(List<UserRoleEntity> roles) { this.roles = roles; }
 }

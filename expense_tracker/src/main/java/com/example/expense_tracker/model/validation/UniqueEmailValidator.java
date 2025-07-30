@@ -24,7 +24,14 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return userRepository.findByEmail(value)
-                .isEmpty();
+        boolean isUnique = userRepository.findByEmail(value).isEmpty();
+        
+        if (!isUnique) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(message)
+                   .addConstraintViolation();
+        }
+        
+        return isUnique;
     }
 }

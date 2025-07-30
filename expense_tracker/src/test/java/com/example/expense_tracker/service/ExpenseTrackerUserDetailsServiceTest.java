@@ -4,7 +4,7 @@ import static org.mockito.Mockito.when;
 
 import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.model.entity.UserRoleEntity;
-import com.example.expense_tracker.model.entity.enums.UserRoleEnum;
+import com.example.expense_tracker.model.enums.UserRoleEnum;
 import com.example.expense_tracker.model.user.ExpenseTrackerUserDetails;
 import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.impl.ExpenseTrackerUserDetailsService;
@@ -46,9 +46,15 @@ public class ExpenseTrackerUserDetailsServiceTest {
         testUser.setPassword("topsecret");
         testUser.setFirstname("John");
         testUser.setLastname("Doe");
+
+        UserRoleEntity userRole = new UserRoleEntity();
+        userRole.setRoleName(UserRoleEnum.USER);
+
+        UserRoleEntity adminRole = new UserRoleEntity();
+        adminRole.setRoleName(UserRoleEnum.ADMIN);
+
         testUser.setRoles(List.of(
-                new UserRoleEntity().setRoleName(UserRoleEnum.USER),
-                new UserRoleEntity().setRoleName(UserRoleEnum.ADMIN)
+                userRole, adminRole
         ));
 
         when(mockUserRepository.findByEmail(TEST_EMAIL)).thenReturn(Optional.of(testUser));

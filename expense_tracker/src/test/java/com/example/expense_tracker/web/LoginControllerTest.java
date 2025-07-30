@@ -2,9 +2,11 @@ package com.example.expense_tracker.web;
 
 import com.example.expense_tracker.model.dto.AuthRequestDto;
 import com.example.expense_tracker.model.dto.AuthResponseDto;
+import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.repository.UserRoleRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,10 +14,39 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.junit.jupiter.api.AfterEach;
+import com.example.expense_tracker.model.entity.UserRoleEntity;
+import com.example.expense_tracker.model.enums.UserRoleEnum;
+
+import java.util.List;
 
 // ИНТЕГРАЦИОНЕН ТЕСТ - стартира цялото Spring Boot приложение на random port
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthControllerTest {
+public class LoginControllerTest {
+
+    @BeforeEach
+    void dbInit() {
+        UserRoleEntity userRole = new UserRoleEntity();
+        userRole.setRoleName(UserRoleEnum.USER);
+        userRole.setRoleName(UserRoleEnum.ADMIN);
+        userRoleRepository.save(userRole);
+
+        UserEntity user = new UserEntity();
+        user.setEmail("testUser@test.bg");
+        user.setFirstname("Test");
+        user.setLastname("User");
+        user.setPassword(passwordEncoder.encode("password123"));
+        user.setActive(true);
+        user.setRoles(List.of(userRole));
+
+        userRepository.save(user);
+    }
+
+    @AfterEach
+    void dbCleanup() {
+        userRepository.deleteAll();
+        userRoleRepository.deleteAll();
+    }
 
     // Autowired TestRestTemplate - за правене на HTTP заявки към приложението
     @Autowired
@@ -45,7 +76,7 @@ public class AuthControllerTest {
 
         // 4. HTTP ЗАЯВКА - POST към /auth/login endpoint-а
         ResponseEntity<AuthResponseDto> response = restTemplate.exchange(
-                "/auth/login",               // URL endpoint
+                "/login",               // URL endpoint
                 HttpMethod.POST,             // HTTP метод
                 requestDtoHttpEntity,        // Request body + headers
                 AuthResponseDto.class        // Очакван response тип
@@ -60,7 +91,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void login_WithValidCredentials_Returns401() {
+    public void login_NotValidCredentials_Returns401() {
         AuthRequestDto request = new AuthRequestDto("testUser@test.bg", "password1234");
 
         HttpHeaders headers = new HttpHeaders();
@@ -78,6 +109,7 @@ public class AuthControllerTest {
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
+
 }
 
 

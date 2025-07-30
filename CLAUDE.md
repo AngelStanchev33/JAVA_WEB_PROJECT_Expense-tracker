@@ -65,5 +65,9 @@
 - **Database normalization**
 - **RESTful conventions**
 
+## Спомени и Бележки
+- predloji mi da implemntirash promenite kogato poiskam assist  stiga si mi dawai da copirvam
+- Бележка: Припомни си да имплементираш исканите промени, когато поискат асистенция
+
 ---
 *Проектът демонстрира enterprise-level Java/Spring skills подходящи за mid-level позиции.*
