@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
@@ -44,6 +45,8 @@ public class UserActivationServiceImpl implements UserActivationService {
 
     @Override
     public void cleanUpObsoleteActivationLinks() {
+        LocalDateTime expiredBefore = LocalDateTime.now().minusHours(24);
+        userActivationCodeRepository.deleteExpiredActivationCodes(expiredBefore);
 
     }
 

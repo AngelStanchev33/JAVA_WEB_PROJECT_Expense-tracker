@@ -6,6 +6,11 @@ import com.example.expense_tracker.model.entity.UserRoleEntity;
 import com.example.expense_tracker.model.enums.UserRoleEnum;
 import com.example.expense_tracker.model.event.UserRegisteredEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.repository.UserRoleRepository;
@@ -18,14 +23,19 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final ExpenseTrackerUserDetailsService expenseTrackerUserDetailsService;
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
-
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public UserServiceImpl(UserRepository userRepository, UserRoleRepository userRoleRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, ApplicationEventPublisher applicationEventPublisher) {
+    public UserServiceImpl(ExpenseTrackerUserDetailsService expenseTrackerUserDetailsService,
+                           UserRepository userRepository,
+                           UserRoleRepository userRoleRepository,
+                           ModelMapper modelMapper, PasswordEncoder passwordEncoder,
+                           ApplicationEventPublisher applicationEventPublisher) {
+        this.expenseTrackerUserDetailsService = expenseTrackerUserDetailsService;
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.modelMapper = modelMapper;
@@ -39,6 +49,42 @@ public class UserServiceImpl implements UserService {
         UserEntity user = createUserFromRequest(requestDto, foundRoles);
         userRepository.save(user);
         publishUserRegisteredEvent(requestDto);
+    }
+
+    @Override
+    public void createUserIfNotExist(String email, String name) {
+
+        if (userRepository.findByEmail(email).isEmpty()) {
+            String[] nameParts = name.split(" ", 2);
+            String firstName = nameParts[0];
+            String lastName = nameParts.length > 1 ? nameParts[1] : "";
+
+            List<UserRoleEntity> userRole = userRoleRepository.findByRoleNameIn(List.of(UserRoleEnum.USER));
+
+            UserEntity newUser = new UserEntity();
+            newUser.setEmail(email);
+            newUser.setFirstname(firstName);
+            newUser.setLastname(lastName);
+            newUser.setActive(true);
+            newUser.setPassword(passwordEncoder.encode("oauth2-dummy-password"));
+            newUser.setRoles(userRole);
+
+            userRepository.save(newUser);
+        }
+    }
+
+    @Override
+    public Authentication loginWithOAuth(String email) {
+        UserDetails user = expenseTrackerUserDetailsService.loadUserByUsername(email);
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                user.getUsername(),
+                user.getPassword(),
+                user.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        return auth;
     }
 
     private List<UserRoleEntity> resolveUserRoles(List<String> roleNames) {

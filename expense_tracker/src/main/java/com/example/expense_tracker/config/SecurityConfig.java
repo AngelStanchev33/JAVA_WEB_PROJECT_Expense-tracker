@@ -28,7 +28,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, OAuthSuccessHandler oAuthSuccessHandler) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(
                         auth -> auth
@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .csrf((AbstractHttpConfigurer::disable))
+                .oauth2Login(oauth -> oauth.successHandler(oAuthSuccessHandler))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType("application/json");
