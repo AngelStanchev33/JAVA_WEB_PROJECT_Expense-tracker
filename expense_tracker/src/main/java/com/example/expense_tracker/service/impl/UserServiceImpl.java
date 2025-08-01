@@ -52,12 +52,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUserIfNotExist(String email, String name) {
+    public void createUserIfNotExist(String login, String email) {
 
         if (userRepository.findByEmail(email).isEmpty()) {
-            String[] nameParts = name.split(" ", 2);
+            String[] nameParts = login.split(" ", 2);
             String firstName = nameParts[0];
-            String lastName = nameParts.length > 1 ? nameParts[1] : "";
+            String lastName = nameParts.length > 1 ? nameParts[1] : firstName;
 
             List<UserRoleEntity> userRole = userRoleRepository.findByRoleNameIn(List.of(UserRoleEnum.USER));
 
@@ -75,6 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Authentication loginWithOAuth(String email) {
+        System.out.println("trying to log in");
         UserDetails user = expenseTrackerUserDetailsService.loadUserByUsername(email);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(

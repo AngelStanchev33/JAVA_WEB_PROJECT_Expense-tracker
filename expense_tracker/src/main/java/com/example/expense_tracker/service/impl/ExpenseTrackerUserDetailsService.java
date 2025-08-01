@@ -23,8 +23,9 @@ public class ExpenseTrackerUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+        System.out.println();
 
-        return userRepository.findByEmail(userEmail)
+        return userRepository.findByEmailWithUserRoles(userEmail)
                 .map(this::map)
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + userEmail + "not found"));
     }

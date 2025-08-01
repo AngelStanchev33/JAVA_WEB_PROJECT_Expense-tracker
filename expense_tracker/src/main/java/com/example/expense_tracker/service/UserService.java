@@ -7,7 +7,7 @@ public interface UserService {
 
     public void register(RegisterRequestDto requestDto);
 
-    void createUserIfNotExist(String email, String name);
+    void createUserIfNotExist(String login, String email);
 
     public Authentication loginWithOAuth(String email);
 }
