@@ -6,6 +6,7 @@ import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.EmailService;
 import com.example.expense_tracker.service.UserActivationCodeRepository;
 import com.example.expense_tracker.service.UserActivationService;
+import jakarta.transaction.Transactional;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,8 @@ public class UserActivationServiceImpl implements UserActivationService {
 
     private static final String ACTIVATION_CODE_SYMBOLS = "abcdefghijklmnopqrstuvwxyzABCDEFGJKLMNPRSTUVWXYZ0123456789";
     private static final int ACTIVATION_CODE_LENGTH = 20;
-
     private final EmailService emailService;
-
     private final UserRepository userRepository;
-
     private final UserActivationCodeRepository userActivationCodeRepository;
 
     public UserActivationServiceImpl(EmailService emailService, UserRepository userRepository, UserActivationCodeRepository userActivationCodeRepository) {
@@ -43,6 +41,7 @@ public class UserActivationServiceImpl implements UserActivationService {
                 activationCode);
     }
 
+    @Transactional
     @Override
     public void cleanUpObsoleteActivationLinks() {
         LocalDateTime expiredBefore = LocalDateTime.now().minusHours(24);
@@ -71,7 +70,7 @@ public class UserActivationServiceImpl implements UserActivationService {
 
         for (int i = 0; i < ACTIVATION_CODE_LENGTH; i++) {
             int randomInx = random.nextInt(ACTIVATION_CODE_SYMBOLS.length()); //генерира случайно число от до 0 до дължината на Стринга
-            activationCode.append(ACTIVATION_CODE_SYMBOLS.charAt(randomInx));
+            activationCode.append(ACTIVATION_CODE_SYMBOLS.charAt(randomInx));//взима сумвола който се намира на индекса
         }
 
         return activationCode.toString();

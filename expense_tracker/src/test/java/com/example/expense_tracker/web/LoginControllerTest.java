@@ -17,8 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.AfterEach;
 import com.example.expense_tracker.model.entity.UserRoleEntity;
 import com.example.expense_tracker.model.enums.UserRoleEnum;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 // ИНТЕГРАЦИОНЕН ТЕСТ - стартира цялото Spring Boot приложение на random port
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,19 +28,13 @@ public class LoginControllerTest {
 
     @BeforeEach
     void dbInit() {
-        UserRoleEntity userRole = new UserRoleEntity();
-        userRole.setRoleName(UserRoleEnum.USER);
-        userRole.setRoleName(UserRoleEnum.ADMIN);
-        userRoleRepository.save(userRole);
-
         UserEntity user = new UserEntity();
         user.setEmail("testUser@test.bg");
         user.setFirstname("Test");
         user.setLastname("User");
         user.setPassword(passwordEncoder.encode("password123"));
         user.setActive(true);
-        user.setRoles(List.of(userRole));
-
+        user.setRoles(userRoleRepository.findByRoleNameIn(List.of(UserRoleEnum.USER, UserRoleEnum.ADMIN)));
         userRepository.save(user);
     }
 
@@ -72,7 +68,8 @@ public class LoginControllerTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         // 3. HTTP ENTITY - комбинираме request body + headers
-        HttpEntity<AuthRequestDto> requestDtoHttpEntity = new HttpEntity<>(request, headers);
+        HttpEntity<AuthRequestDto> requestDtoHttpEntity
+                = new HttpEntity<>(request, headers);
 
         // 4. HTTP ЗАЯВКА - POST към /auth/login endpoint-а
         ResponseEntity<AuthResponseDto> response = restTemplate.exchange(
@@ -82,7 +79,8 @@ public class LoginControllerTest {
                 AuthResponseDto.class        // Очакван response тип
         );
 
-        System.out.println();
+        System.out.println("Response status: " + response.getStatusCode());
+        System.out.println("Response body: " + response.getBody());
 
         // 5. ASSERTION-И - проверяваме отговора
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);  // HTTP 200
@@ -100,7 +98,7 @@ public class LoginControllerTest {
         HttpEntity<AuthRequestDto> requestDtoHttpEntity = new HttpEntity<>(request, headers);
 
         ResponseEntity<AuthResponseDto> response = restTemplate.exchange(
-                "/auth/login",
+                "/login",
                 HttpMethod.POST,
                 requestDtoHttpEntity,
                 AuthResponseDto.class
