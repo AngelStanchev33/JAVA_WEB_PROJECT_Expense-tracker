@@ -24,7 +24,7 @@ public class ExpenseController {
     public ResponseEntity<ExpenseResponseDto> createExpense(
             @Valid @RequestBody CreateExpenseDto dto,
             Authentication authentication) {
-        
+
         String userEmail = authentication.getName();
         ExpenseResponseDto response = expenseService.createExpense(dto, userEmail);
         

@@ -70,6 +70,7 @@
 - Бележка: Припомни си да имплементираш исканите промени, когато поискат асистенция
 - zappomni che sme na stupka da implemnitram outh2 i che polzvame guide
 - zapomni do kude sme
+- Запомни текущата точка на прекъсване в проекта
 
 ---
 *Проектът демонстрира enterprise-level Java/Spring skills подходящи за mid-level позиции.*

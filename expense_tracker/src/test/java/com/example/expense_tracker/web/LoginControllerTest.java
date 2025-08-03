@@ -57,7 +57,6 @@ public class LoginControllerTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-
     @Test
     public void login_WithValidCredentials_ReturnsToken() throws Exception {
         // 1. ПОДГОТОВКА - създаваме DTO с тестови credentials

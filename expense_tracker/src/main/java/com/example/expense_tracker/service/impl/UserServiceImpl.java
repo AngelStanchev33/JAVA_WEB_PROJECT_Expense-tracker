@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
     public void register(RegisterRequestDto requestDto) {
         List<UserRoleEntity> foundRoles = resolveUserRoles(requestDto.getUserRoles());
         UserEntity user = createUserFromRequest(requestDto, foundRoles);
+        System.out.println();
         userRepository.save(user);
         publishUserRegisteredEvent(requestDto);
     }
@@ -75,7 +76,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Authentication loginWithOAuth(String email) {
-        System.out.println("trying to log in");
         UserDetails user = expenseTrackerUserDetailsService.loadUserByUsername(email);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(
@@ -99,6 +99,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = modelMapper.map(requestDto, UserEntity.class);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         user.setRoles(roles);
+        System.out.println();
         return user;
     }
 

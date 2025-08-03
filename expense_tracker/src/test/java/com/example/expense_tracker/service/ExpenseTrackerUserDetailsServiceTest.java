@@ -27,12 +27,10 @@ public class ExpenseTrackerUserDetailsServiceTest {
 
     private static final String TEST_EMAIL = "user@example.com";
     private static final String NOT_EXISTENT_EMAIL = "noone@example.com";
-
     private UserDetailsService testUserService;
 
     @Mock
     private UserRepository mockUserRepository;
-
 
     @BeforeEach
     void SetUp() {

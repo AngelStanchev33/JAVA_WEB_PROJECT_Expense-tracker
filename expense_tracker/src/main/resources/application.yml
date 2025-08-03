@@ -1,6 +1,6 @@
 jwt:
-  signing-key: ${JWT_SIGNING_KEY:WSdv1kEE1tCT1a8ihRSqfwMNzlPBq8IWSdv1kEE1tCT1a8ihRSqfwMNzlPBq8IWSdv1kEE1tCT1a8ihRSqfwMNzlPBq8IXY123456789}
-  expiration: ${JWT_EXPIRATION:86400000}
+  signing-key: ${JWT_SIGNING_KEY}
+  expiration: ${JWT_EXPIRATION}
 
 mail:
   expenseTracker: "expensetracker@example.com"

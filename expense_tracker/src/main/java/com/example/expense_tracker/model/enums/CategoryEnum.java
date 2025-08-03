@@ -3,9 +3,10 @@ package com.example.expense_tracker.model.enums;
 public enum CategoryEnum {
     FOOD,
     TRANSPORT,
-    RENT,
-    UTILITIES,
     ENTERTAINMENT,
-    HEALTH,
+    HEALTHCARE,
+    SHOPPING,
+    BILLS,
+    EDUCATION,
     OTHER
 }

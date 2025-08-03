@@ -1,0 +1,51 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+       http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="v1.0-018" author="Angel">
+        <comment>Update category values to uppercase to match enum</comment>
+        
+        <update tableName="categories">
+            <column name="category" value="FOOD"/>
+            <where>category = 'Food'</where>
+        </update>
+        
+        <update tableName="categories">
+            <column name="category" value="TRANSPORT"/>
+            <where>category = 'Transport'</where>
+        </update>
+        
+        <update tableName="categories">
+            <column name="category" value="ENTERTAINMENT"/>
+            <where>category = 'Entertainment'</where>
+        </update>
+        
+        <update tableName="categories">
+            <column name="category" value="HEALTHCARE"/>
+            <where>category = 'Healthcare'</where>
+        </update>
+        
+        <update tableName="categories">
+            <column name="category" value="SHOPPING"/>
+            <where>category = 'Shopping'</where>
+        </update>
+        
+        <update tableName="categories">
+            <column name="category" value="BILLS"/>
+            <where>category = 'Bills'</where>
+        </update>
+        
+        <update tableName="categories">
+            <column name="category" value="EDUCATION"/>
+            <where>category = 'Education'</where>
+        </update>
+        
+        <update tableName="categories">
+            <column name="category" value="OTHER"/>
+            <where>category = 'Other'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>

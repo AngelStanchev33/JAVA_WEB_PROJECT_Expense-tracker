@@ -47,4 +47,7 @@ public class UserEntity extends BaseEntity {
                inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<UserRoleEntity> roles;
 
+    @OneToMany(mappedBy = "user")
+    private List<ExpenseEntity> expenses;
+
 }

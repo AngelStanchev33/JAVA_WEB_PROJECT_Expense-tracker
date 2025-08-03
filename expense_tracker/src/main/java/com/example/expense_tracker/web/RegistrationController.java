@@ -14,19 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegistrationController {
 
     private final UserService userService;
-    private final EmailService emailService;
 
-    public RegistrationController(UserService userService, EmailService emailService) {
+    public RegistrationController(UserService userService) {
         this.userService = userService;
-        this.emailService = emailService;
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto requestDto) {
         userService.register(requestDto);
-
-//        emailService.sendRegistrationEmail(requestDto.getEmail(), requestDto.getFirstname());
-
 
 
         return ResponseEntity.ok("registration  successful");

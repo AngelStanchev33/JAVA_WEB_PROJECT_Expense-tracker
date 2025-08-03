@@ -1,5 +1,5 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
        http://www.liquibase.org/xml/ns/dbchangelog
        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
@@ -18,6 +18,9 @@
     <include file="db/changelog/v1.0/013-create-user-preferences-table.xml"/>
     <include file="db/changelog/v1.0/014-create-user-activation-codes.xml"/>
     <include file="db/changelog/v1.0/015-rename-users_roles-to-user_roles.xml"/>
-    <include file="db/changelog/v1.0/016-insert-initial-data.xml"/>
+    <include file="/db/changelog/v1.0/016-insert-initial-categories.xml"/>
+    <include file="db/changelog/v1.0/017-insert-initial-user_roles.xml"/>
+    <include file="db/changelog/v1.0/018-update-categories-to-uppercase.xml"/>
+    <include file="db/changelog/v1.0/019-update-amount-scale-to-2.xml"/>
 
 </databaseChangeLog>

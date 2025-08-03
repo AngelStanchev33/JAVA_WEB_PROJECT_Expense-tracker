@@ -17,7 +17,7 @@ public class ExpenseEntity extends BaseEntity {
 
     @NotNull
     @Positive
-    @Column(name = "amount", nullable = false, precision = 19, scale = 4)
+    @Column(name = "amount", nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
     @NotNull
