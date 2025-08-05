@@ -5,6 +5,7 @@ import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.model.entity.UserRoleEntity;
 import com.example.expense_tracker.model.enums.UserRoleEnum;
 import com.example.expense_tracker.model.event.UserRegisteredEvent;
+import com.example.expense_tracker.service.EmailService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,13 +48,12 @@ public class UserServiceImpl implements UserService {
     public void register(RegisterRequestDto requestDto) {
         List<UserRoleEntity> foundRoles = resolveUserRoles(requestDto.getUserRoles());
         UserEntity user = createUserFromRequest(requestDto, foundRoles);
-        System.out.println();
         userRepository.save(user);
         publishUserRegisteredEvent(requestDto);
     }
 
     @Override
-    public void createUserIfNotExist(String login, String email) {
+    public void registerWithOauth2(String login, String email) {
 
         if (userRepository.findByEmail(email).isEmpty()) {
             String[] nameParts = login.split(" ", 2);
@@ -88,6 +88,7 @@ public class UserServiceImpl implements UserService {
         return auth;
     }
 
+
     private List<UserRoleEntity> resolveUserRoles(List<String> roleNames) {
         List<UserRoleEnum> userRoles = roleNames.stream()
                 .map(UserRoleEnum::valueOf)
@@ -99,7 +100,6 @@ public class UserServiceImpl implements UserService {
         UserEntity user = modelMapper.map(requestDto, UserEntity.class);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         user.setRoles(roles);
-        System.out.println();
         return user;
     }
 

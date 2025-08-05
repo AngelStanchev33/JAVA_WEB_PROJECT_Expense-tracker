@@ -71,6 +71,7 @@
 - zappomni che sme na stupka da implemnitram outh2 i che polzvame guide
 - zapomni do kude sme
 - Запомни текущата точка на прекъсване в проекта
+- mahni vsichki sledi che sym pravil nesht s claude code shte kadnistvma za rabota vse pak i go zapomni i za sledvashti commiti
 
 ---
 *Проектът демонстрира enterprise-level Java/Spring skills подходящи за mid-level позиции.*

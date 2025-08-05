@@ -48,23 +48,26 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
                 name = login;
             }
 
-            userService.createUserIfNotExist(login, email);
-            
+            userService.registerWithOauth2(login, email);
+
             Authentication authResult = userService.loginWithOAuth(email);
-            
+
             List<String> roles = authResult.getAuthorities().stream()
                     .map(Object::toString)
                     .toList();
-            
+
             Map<String, Object> claims = Map.of("roles", roles);
-            
+
             String jwtToken = jwtService.generateToken(email, claims);
-            
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            
-            Map<String, String> tokenResponse = Map.of("token", jwtToken);
-            response.getWriter().write(objectMapper.writeValueAsString(tokenResponse));
+
+            if (jwtService.isTokenValid(jwtToken)) {
+
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+
+                Map<String, String> tokenResponse = Map.of("token", jwtToken);
+                response.getWriter().write(objectMapper.writeValueAsString(tokenResponse));
+            }
         }
     }
 }

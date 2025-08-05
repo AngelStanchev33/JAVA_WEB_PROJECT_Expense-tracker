@@ -14,13 +14,13 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     private final String expenseTrackerEmail;
 
-    public EmailServiceImpl(JavaMailSender javaMailSender, @Value("${mail.expenseTracker}") String expenseTracker) {
+    public EmailServiceImpl(JavaMailSender javaMailSender, @Value("${mail.expenseTracker}") String expenseTrackerEmail) {
         this.javaMailSender = javaMailSender;
-        this.expenseTrackerEmail = expenseTracker;
+        this.expenseTrackerEmail = expenseTrackerEmail;
     }
 
     @Override
-    public void sendRegistrationEmail(String userEmail, String userName, String activationCode) {
+    public void sendRegistrationEmail(String userEmail, String userName) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
@@ -31,17 +31,15 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setReplyTo(expenseTrackerEmail);
             mimeMessageHelper.setSubject("Welcome to Expense Tracker!");
             mimeMessageHelper.setText(
-                "Welcome to Expense Tracker!\n" +
-                "Hello " + userName + ",\n" +
-                "Your registration was successful!\n\n" +
-                "Best regards,\nThe Expense Tracker Team", 
-                false); // false = plain text, не HTML
-            
+                    "Welcome to Expense Tracker!\n" +
+                            "Hello " + userName + ",\n" +
+                            "Your registration was successful!\n\n" +
+                            "Best regards,\nThe Expense Tracker Team",
+                    false);
+
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send registration email", e);
         }
-
-
     }
 }
