@@ -5,6 +5,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.expense_tracker.model.entity.UserRoleEntity;
+import com.example.expense_tracker.model.enums.UserRoleEnum;
+import com.example.expense_tracker.repository.UserRoleRepository;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import jakarta.mail.internet.MimeMessage;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 
 import com.example.expense_tracker.model.entity.UserEntity;
@@ -22,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +35,7 @@ import java.util.stream.Collectors;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class RegistrationControllerTest {
 
     @Autowired
@@ -40,6 +46,9 @@ public class RegistrationControllerTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
 
     @Value("${mail.port}")
     private int port;
@@ -60,6 +69,21 @@ public class RegistrationControllerTest {
         greenMail = new GreenMail(new ServerSetup(port, host, "smtp"));
         greenMail.start();
         greenMail.setUser(username, password);
+
+        if (userRepository.count() == 0) {
+            UserRoleEntity userRole = new UserRoleEntity();
+            userRole.setRoleName(UserRoleEnum.USER);
+            userRoleRepository.save(userRole);
+
+            UserRoleEntity adminRole = new UserRoleEntity();
+            adminRole.setRoleName(UserRoleEnum.MODERATOR);
+            userRoleRepository.save(adminRole);
+        }
+    }
+
+    @AfterEach
+    void cleanUp() {
+        userRoleRepository.deleteAll();
     }
 
     @AfterEach

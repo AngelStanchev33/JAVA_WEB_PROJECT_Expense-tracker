@@ -27,12 +27,12 @@ public class BudgetEntity extends BaseEntity{
 
     @NotNull
     @Positive
-    @Column(name = "limit", nullable = false, precision = 19, scale = 4)
+    @Column(name = "limit", nullable = false, precision = 19, scale = 2)
     private BigDecimal limit;
 
     @NotNull
     @PositiveOrZero
-    @Column(name = "spent", nullable = false, precision = 19, scale = 4)
+    @Column(name = "spent", nullable = false, precision = 19, scale = 2)
     private BigDecimal spent = BigDecimal.ZERO;
 
 }

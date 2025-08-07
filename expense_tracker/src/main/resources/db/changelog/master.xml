@@ -22,4 +22,5 @@
     <include file="db/changelog/v1.0/017-insert-initial-user_roles.xml"/>
     <include file="db/changelog/v1.0/018-update-categories-to-uppercase.xml"/>
     <include file="db/changelog/v1.0/019-update-amount-scale-to-2.xml"/>
+    <include file="db/changelog/v1.0/020-update-budget-scale-to-2.xml"/>
 </databaseChangeLog>

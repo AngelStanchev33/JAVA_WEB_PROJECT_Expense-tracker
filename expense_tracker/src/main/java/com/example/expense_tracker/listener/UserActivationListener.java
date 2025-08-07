@@ -1,20 +1,19 @@
-package com.example.expense_tracker.service.impl;
+package com.example.expense_tracker.listener;
 
 import com.example.expense_tracker.model.event.UserRegisteredEvent;
 import com.example.expense_tracker.service.EmailService;
-import com.example.expense_tracker.service.UserActivationService;
 import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
-public class UserActivationServiceImpl implements UserActivationService {
+@Component
+public class UserActivationListener {
     private final EmailService emailService;
 
-    public UserActivationServiceImpl(EmailService emailService) {
+    public UserActivationListener(EmailService emailService) {
         this.emailService = emailService;
     }
 
-    @Override
     @EventListener
     public void userRegistered(UserRegisteredEvent event) {
         emailService.sendRegistrationEmail(

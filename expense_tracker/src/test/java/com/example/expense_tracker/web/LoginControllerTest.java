@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.AfterEach;
 import com.example.expense_tracker.model.entity.UserRoleEntity;
 import com.example.expense_tracker.model.enums.UserRoleEnum;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -24,18 +25,32 @@ import java.util.Optional;
 
 // ИНТЕГРАЦИОНЕН ТЕСТ - стартира цялото Spring Boot приложение на random port
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class LoginControllerTest {
 
     @BeforeEach
     void dbInit() {
-        UserEntity user = new UserEntity();
-        user.setEmail("testUser@test.bg");
-        user.setFirstname("Test");
-        user.setLastname("User");
-        user.setPassword(passwordEncoder.encode("password123"));
-        user.setActive(true);
-        user.setRoles(userRoleRepository.findByRoleNameIn(List.of(UserRoleEnum.USER, UserRoleEnum.ADMIN)));
-        userRepository.save(user);
+
+        if (userRoleRepository.count() == 0) {
+            UserRoleEntity userRole = new UserRoleEntity();
+            userRole.setRoleName(UserRoleEnum.USER);
+            userRoleRepository.save(userRole);
+
+            UserRoleEntity adminRole = new UserRoleEntity();
+            adminRole.setRoleName(UserRoleEnum.ADMIN);
+            userRoleRepository.save(adminRole);
+        }
+
+        if (userRepository.count() == 0) {
+            UserEntity user = new UserEntity();
+            user.setEmail("testUser@test.bg");
+            user.setFirstname("Test");
+            user.setLastname("User");
+            user.setPassword(passwordEncoder.encode("password123"));
+            user.setActive(true);
+            user.setRoles(userRoleRepository.findByRoleNameIn(List.of(UserRoleEnum.USER, UserRoleEnum.ADMIN)));
+            userRepository.save(user);
+        }
     }
 
     @AfterEach

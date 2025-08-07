@@ -72,6 +72,13 @@
 - zapomni do kude sme
 - Запомни текущата точка на прекъсване в проекта
 - mahni vsichki sledi che sym pravil nesht s claude code shte kadnistvma za rabota vse pak i go zapomni i za sledvashti commiti
+- @CLAUDE.md zapomni kakvo mislim da pravim za eventite
+- dai da se vurnem na expenses, zashoto imae samo creae i  get, dai mi sekelt da narpavq update i delete. Malko sym rusity vodi me stupka po stupka pitai me koga minem na sldvashta no ideqta da se ucha vse pak se podgotvaram za interview.
+- kogato pravim buisness logika mevodi i me napustvai no me ostavi da milsq, ne go rehsvai vmesto menn, osven akone kaja 
+- zapomni che napravim rest spring apis jwtfilter , daje i da dam nqkoi cod koito e napravim za classicheski auth otebelji go i me predupredi, che nqma da raboti za men
+- Ще следваме guide за Spring SpEL implementation в expense tracker проекта, с цел научаване и подготовка за интервю. Ще имплементираме стъпка по стъпка, като ми помагаш с въпроси когато е необходимо.
+- ne mi preskachai ot class na class che me zabolq glavata sega pravi @expense_tracker\src\main\java\com\example\expense_tracker\config\ExpenseMethodSecurityExpressionHandler.java dokato ne go implemntirame drugo ne te iterruva taka pravi za vseki edin class, pitai me dali da premnivash na sledvashtiq
+- **Запомнено:** Точното място, докъдето сме стигнали в проекта
 
 ---
 *Проектът демонстрира enterprise-level Java/Spring skills подходящи за mid-level позиции.*

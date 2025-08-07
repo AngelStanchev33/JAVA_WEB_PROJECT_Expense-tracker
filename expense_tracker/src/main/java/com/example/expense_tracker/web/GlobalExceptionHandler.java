@@ -1,6 +1,6 @@
 package com.example.expense_tracker.web;
 
-import com.example.expense_tracker.service.exeption.CategoryNotFoundException;
+import com.example.expense_tracker.exeption.CategoryNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

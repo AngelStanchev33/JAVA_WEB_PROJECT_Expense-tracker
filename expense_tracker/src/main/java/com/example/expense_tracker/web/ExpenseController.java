@@ -2,16 +2,18 @@ package com.example.expense_tracker.web;
 
 import com.example.expense_tracker.model.dto.CreateExpenseDto;
 import com.example.expense_tracker.model.dto.ExpenseResponseDto;
+import com.example.expense_tracker.model.dto.UpdateExpenseDto;
 import com.example.expense_tracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/expenses")
+@RequestMapping("/expenses")
 public class ExpenseController {
 
     private final ExpenseService expenseService;
@@ -20,22 +22,35 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ExpenseResponseDto> createExpense(
             @Valid @RequestBody CreateExpenseDto dto,
             Authentication authentication) {
 
         String userEmail = authentication.getName();
         ExpenseResponseDto response = expenseService.createExpense(dto, userEmail);
-        
+
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    @PreAuthorize("@ownerSec.isOwner(#id)")
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable Long id,
+                                                            @RequestBody UpdateExpenseDto updateExpenseDto) {
+        ExpenseResponseDto expenseResponseDto = expenseService.updateExpense(id, updateExpenseDto);
+
+        return ResponseEntity.ok(expenseResponseDto);
+    }
+
+
+    @PreAuthorize("isOwner(#id)")
+    @GetMapping("/my")
     public ResponseEntity<List<ExpenseResponseDto>> getUserExpenses(Authentication authentication) {
         String userEmail = authentication.getName();
         List<ExpenseResponseDto> expenses = expenseService.getUserExpenses(userEmail);
-        
+
         return ResponseEntity.ok(expenses);
     }
+
+
 }
