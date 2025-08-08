@@ -14,5 +14,7 @@ public interface ExpenseService {
 
     ExpenseResponseDto updateExpense(Long id, UpdateExpenseDto updateExpenseDto);
 
-    boolean isOwner(Long id,String username);
+    void deleteExpense(Long expenseId);
+
+    boolean isOwner(Long id, String username);
 }

@@ -21,4 +21,3 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
         return new ExpenseMethodSecurityExpressionHandler(expenseService);
     }
 }
-

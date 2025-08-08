@@ -79,6 +79,17 @@
 - Ще следваме guide за Spring SpEL implementation в expense tracker проекта, с цел научаване и подготовка за интервю. Ще имплементираме стъпка по стъпка, като ми помагаш с въпроси когато е необходимо.
 - ne mi preskachai ot class na class che me zabolq glavata sega pravi @expense_tracker\src\main\java\com\example\expense_tracker\config\ExpenseMethodSecurityExpressionHandler.java dokato ne go implemntirame drugo ne te iterruva taka pravi za vseki edin class, pitai me dali da premnivash na sledvashtiq
 - **Запомнено:** Точното място, докъдето сме стигнали в проекта
+- mahni tova s claude-a, kogato kachvame,  ne iskam da se znae
 
 ---
 *Проектът демонстрира enterprise-level Java/Spring skills подходящи за mid-level позиции.*
+- ne vlzia v contolera nishto ne se prinita sega zapomni kakvo se e sluchilo da tuk napravih nov contex specialno za tozi problem -> jwt minawa tokena e VALID -> ne vliza v contollera - >2025-08-08T00:00:10.444-04:00 DEBUG 20292 --- [expense-tracker] [nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing PUT /error
+2025-08-08T00:00:10.445-04:00 DEBUG 20292 --- [expense-tracker] [nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext poluchvam tozi error
+- ima napreduk     @PreAuthorize("hasRole('USER')")
+raboti vlena v contolera
+- kogato smenit n a@PreAuthorize poluchawam 2025-08-08T00:08:29.841-04:00 DEBUG 16444 --- [expense-tracker] [nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing PUT /error
+2025-08-08T00:08:29.842-04:00 DEBUG 16444 --- [expense-tracker] [nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+- sushto taka ne vliza v @ExpenseMethodSecurityExpressionHandler MethodSecurityExpressionOperations()
+- === Creating MethodSecurityExpressionHandler Bean === === MethodSecurityConfig initialized == tva se printira koeot shte reche che beana se suzdva noqvno ne se izvika sushto taak sme antorirali @Primary MethodSecurityExpressionHandler
+- opravihme problema
+- i delete raobit

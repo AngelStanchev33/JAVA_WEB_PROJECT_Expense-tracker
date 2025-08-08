@@ -1,8 +1,8 @@
 package com.example.expense_tracker.config;
 
+import com.example.expense_tracker.exception.NotOwnerException;
 import com.example.expense_tracker.service.ExpenseService;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -23,14 +23,19 @@ public class OwnerSecurityExpressionClass extends SecurityExpressionRoot impleme
         String username = currentUserName();
 
         if (username == null) {
-            return false;
+            throw new NotOwnerException("User not authenticated");
         }
 
         if (id == null) {
-            return false;
+            throw new NotOwnerException("Expense ID is null");
         }
 
-        return expenseService.isOwner(id, username);
+        boolean isOwner = expenseService.isOwner(id, username);
+        if (!isOwner) {
+            throw new NotOwnerException("Access denied");
+        }
+        
+        return true; // Always true if no exception thrown
     }
 
     public String currentUserName() {

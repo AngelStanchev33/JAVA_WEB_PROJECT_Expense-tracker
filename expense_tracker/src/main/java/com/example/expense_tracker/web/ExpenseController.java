@@ -1,5 +1,6 @@
 package com.example.expense_tracker.web;
 
+import com.example.expense_tracker.exception.NotOwnerException;
 import com.example.expense_tracker.model.dto.CreateExpenseDto;
 import com.example.expense_tracker.model.dto.ExpenseResponseDto;
 import com.example.expense_tracker.model.dto.UpdateExpenseDto;
@@ -33,7 +34,16 @@ public class ExpenseController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("@ownerSec.isOwner(#id)")
+
+    @GetMapping("/my")
+    public ResponseEntity<List<ExpenseResponseDto>> getUserExpenses(Authentication authentication) {
+        String userEmail = authentication.getName();
+        List<ExpenseResponseDto> expenses = expenseService.getUserExpenses(userEmail);
+
+        return ResponseEntity.ok(expenses);
+    }
+
+    @PreAuthorize("isOwner(#id)")
     @PutMapping("/update/{id}")
     public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable Long id,
                                                             @RequestBody UpdateExpenseDto updateExpenseDto) {
@@ -42,14 +52,13 @@ public class ExpenseController {
         return ResponseEntity.ok(expenseResponseDto);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteExpense(@PathVariable Long id, Authentication authentication) {
+        String username = authentication.getName();
+        
+        expenseService.deleteExpense(id);
 
-    @PreAuthorize("isOwner(#id)")
-    @GetMapping("/my")
-    public ResponseEntity<List<ExpenseResponseDto>> getUserExpenses(Authentication authentication) {
-        String userEmail = authentication.getName();
-        List<ExpenseResponseDto> expenses = expenseService.getUserExpenses(userEmail);
-
-        return ResponseEntity.ok(expenses);
+        return ResponseEntity.ok("expense with id " + id + " was deleted");
     }
 
 

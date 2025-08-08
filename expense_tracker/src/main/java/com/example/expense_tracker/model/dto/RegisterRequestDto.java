@@ -41,6 +41,4 @@ public class RegisterRequestDto {
     @Size(min = 8, message = "Password confirmation must be at least 8 characters long")
     private String confirmPassword;
 
-    @NotEmpty(message = "At least one role must be selected")
-    private List<String> userRoles;
 }

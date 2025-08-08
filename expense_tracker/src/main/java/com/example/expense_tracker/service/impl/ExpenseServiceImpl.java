@@ -1,6 +1,6 @@
 package com.example.expense_tracker.service.impl;
 
-import com.example.expense_tracker.exeption.ExpenseNotFoundException;
+import com.example.expense_tracker.exception.ExpenseNotFoundException;
 import com.example.expense_tracker.model.dto.CreateExpenseDto;
 import com.example.expense_tracker.model.dto.ExpenseResponseDto;
 import com.example.expense_tracker.model.dto.UpdateExpenseDto;
@@ -10,13 +10,12 @@ import com.example.expense_tracker.repository.CategoryRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
 import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.ExpenseService;
-import com.example.expense_tracker.exeption.CategoryNotFoundException;
-import com.example.expense_tracker.exeption.UserNotFoundException;
+import com.example.expense_tracker.exception.CategoryNotFoundException;
+import com.example.expense_tracker.exception.UserNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -76,8 +75,17 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public void deleteExpense(Long expenseId) {
+        ExpenseEntity expenseEntity = expenseRepository.findById(expenseId)
+                .orElseThrow(()-> new ExpenseNotFoundException(expenseId));
+
+        expenseRepository.delete(expenseEntity);
+
+    }
+
+    @Override
     public boolean isOwner(Long id, String username) {
-        return expenseRepository.findBIdAndUserEmail(id, username).isPresent();
+        return expenseRepository.findByIdAndUserEmail(id, username).isPresent();
 
     }
 

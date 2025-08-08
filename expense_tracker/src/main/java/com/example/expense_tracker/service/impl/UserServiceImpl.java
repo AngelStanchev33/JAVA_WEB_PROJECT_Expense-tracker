@@ -1,13 +1,12 @@
 package com.example.expense_tracker.service.impl;
 
+import com.example.expense_tracker.exception.CategoryNotFoundException;
 import com.example.expense_tracker.model.dto.RegisterRequestDto;
 import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.model.entity.UserRoleEntity;
 import com.example.expense_tracker.model.enums.UserRoleEnum;
 import com.example.expense_tracker.model.event.UserRegisteredEvent;
-import com.example.expense_tracker.service.EmailService;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,8 +45,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(RegisterRequestDto requestDto) {
-        List<UserRoleEntity> foundRoles = resolveUserRoles(requestDto.getUserRoles());
-        UserEntity user = createUserFromRequest(requestDto, foundRoles);
+        UserEntity user = modelMapper.map(requestDto, UserEntity.class);
+        user.setActive(true);
+        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        user.setRoles(List.of(
+                userRoleRepository.findByRoleName(UserRoleEnum.USER)
+                        .orElseThrow(() -> new CategoryNotFoundException("USER")))
+        );
+
         userRepository.save(user);
         publishUserRegisteredEvent(requestDto);
     }
@@ -96,12 +101,6 @@ public class UserServiceImpl implements UserService {
         return userRoleRepository.findByRoleNameIn(userRoles);
     }
 
-    private UserEntity createUserFromRequest(RegisterRequestDto requestDto, List<UserRoleEntity> roles) {
-        UserEntity user = modelMapper.map(requestDto, UserEntity.class);
-        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        user.setRoles(roles);
-        return user;
-    }
 
     private void publishUserRegisteredEvent(RegisterRequestDto requestDto) {
         applicationEventPublisher.publishEvent(new UserRegisteredEvent(

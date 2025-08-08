@@ -1,6 +1,9 @@
 package com.example.expense_tracker.web;
 
-import com.example.expense_tracker.exeption.CategoryNotFoundException;
+import com.example.expense_tracker.exception.NotOwnerException;
+import com.example.expense_tracker.exception.CategoryNotFoundException;
+import com.example.expense_tracker.exception.ExpenseNotFoundException;
+import com.example.expense_tracker.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +29,19 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+        errorResponse.put("error", "User Not Found");
+        errorResponse.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
@@ -59,6 +75,32 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
+
+    @ExceptionHandler(ExpenseNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleExpenseNotfound(ExpenseNotFoundException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+        errorResponse.put("error", "Expense Not Found");
+        errorResponse.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(NotOwnerException.class)
+    public ResponseEntity<Map<String, Object>> handleNotOwnerException(NotOwnerException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.FORBIDDEN.value());
+        errorResponse.put("error", "Access Denied");
+        errorResponse.put("message", ex.getMessage());
+        errorResponse.put("suggestion", "You can only modify your own expenses");
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
 
 
 }
