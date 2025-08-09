@@ -95,7 +95,7 @@ public class RegistrationControllerTest {
     @Test
     @Transactional
     @Rollback
-    void testRegistration() throws Exception {
+    void test_Registration() throws Exception {
 
         mockMvc.perform(post("/register")
                         .contentType(MediaType.APPLICATION_JSON)

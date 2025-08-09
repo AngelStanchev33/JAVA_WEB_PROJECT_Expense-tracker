@@ -3,79 +3,51 @@ package com.example.expense_tracker.web;
 import com.example.expense_tracker.model.dto.AuthRequestDto;
 import com.example.expense_tracker.model.dto.AuthResponseDto;
 import com.example.expense_tracker.model.entity.UserEntity;
-import com.example.expense_tracker.repository.UserRepository;
-import com.example.expense_tracker.repository.UserRoleRepository;
+import com.example.expense_tracker.model.enums.UserRoleEnum;
+import com.example.expense_tracker.testUtil.UserTestDataUtil;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.junit.jupiter.api.AfterEach;
-import com.example.expense_tracker.model.entity.UserRoleEntity;
-import com.example.expense_tracker.model.enums.UserRoleEnum;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 // ИНТЕГРАЦИОНЕН ТЕСТ - стартира цялото Spring Boot приложение на random port
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class LoginControllerTest {
 
-    @BeforeEach
-    void dbInit() {
+    private static final String TEST_USER_EMAIL = "testUser@test.bg";
+    private static final String TEST_USER_PASSWORD = "password123";
+    private static final List<UserRoleEnum> USER_ADMIN_ROLES = List.of(UserRoleEnum.USER, UserRoleEnum.ADMIN);
 
-        if (userRoleRepository.count() == 0) {
-            UserRoleEntity userRole = new UserRoleEntity();
-            userRole.setRoleName(UserRoleEnum.USER);
-            userRoleRepository.save(userRole);
-
-            UserRoleEntity adminRole = new UserRoleEntity();
-            adminRole.setRoleName(UserRoleEnum.ADMIN);
-            userRoleRepository.save(adminRole);
-        }
-
-        if (userRepository.count() == 0) {
-            UserEntity user = new UserEntity();
-            user.setEmail("testUser@test.bg");
-            user.setFirstname("Test");
-            user.setLastname("User");
-            user.setPassword(passwordEncoder.encode("password123"));
-            user.setActive(true);
-            user.setRoles(userRoleRepository.findByRoleNameIn(List.of(UserRoleEnum.USER, UserRoleEnum.ADMIN)));
-            userRepository.save(user);
-        }
-    }
-
-    @AfterEach
-    void dbCleanup() {
-        userRepository.deleteAll();
-        userRoleRepository.deleteAll();
-    }
-
-    // Autowired TestRestTemplate - за правене на HTTP заявки към приложението
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Autowired
-    UserRepository userRepository;
+    private UserTestDataUtil userTestDataUtil;
 
-    @Autowired
-    UserRoleRepository userRoleRepository;
+    @BeforeEach
+    void setUp() {
+        userTestDataUtil.cleanUp();
+    }
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    @AfterEach
+    void tearDown() {
+        userTestDataUtil.cleanUp();
+    }
 
     @Test
-    public void login_WithValidCredentials_ReturnsToken() throws Exception {
+    public void test_login_WithValidCredentials_ReturnsToken() throws Exception {
+        userTestDataUtil.createUser(TEST_USER_EMAIL, USER_ADMIN_ROLES, TEST_USER_PASSWORD);
+
         // 1. ПОДГОТОВКА - създаваме DTO с тестови credentials
-        AuthRequestDto request = new AuthRequestDto("testUser@test.bg", "password123");
+        AuthRequestDto request = new AuthRequestDto(TEST_USER_EMAIL, TEST_USER_PASSWORD);
 
         // 2. HTTP HEADERS - задаваме Content-Type: application/json
         HttpHeaders headers = new HttpHeaders();
@@ -93,8 +65,6 @@ public class LoginControllerTest {
                 AuthResponseDto.class        // Очакван response тип
         );
 
-        System.out.println("Response status: " + response.getStatusCode());
-        System.out.println("Response body: " + response.getBody());
 
         // 5. ASSERTION-И - проверяваме отговора
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);  // HTTP 200
@@ -103,8 +73,8 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void login_NotValidCredentials_Returns401() {
-        AuthRequestDto request = new AuthRequestDto("testUser@test.bg", "password1234");
+    public void test_login_NotValidCredentials_Returns401() {
+        AuthRequestDto request = new AuthRequestDto(TEST_USER_EMAIL, "wrongPassword");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -117,7 +87,6 @@ public class LoginControllerTest {
                 requestDtoHttpEntity,
                 AuthResponseDto.class
         );
-
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }

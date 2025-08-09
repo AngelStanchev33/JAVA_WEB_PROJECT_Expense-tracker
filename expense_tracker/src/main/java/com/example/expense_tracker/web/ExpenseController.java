@@ -45,21 +45,20 @@ public class ExpenseController {
 
     @PreAuthorize("isOwner(#id)")
     @PutMapping("/update/{id}")
-    public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable Long id,
-                                                            @RequestBody UpdateExpenseDto updateExpenseDto) {
+    public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable Long id, @Valid
+    @RequestBody UpdateExpenseDto updateExpenseDto) {
         ExpenseResponseDto expenseResponseDto = expenseService.updateExpense(id, updateExpenseDto);
 
         return ResponseEntity.ok(expenseResponseDto);
     }
 
+    @PreAuthorize("isOwner(#id)")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteExpense(@PathVariable Long id, Authentication authentication) {
         String username = authentication.getName();
-        
+
         expenseService.deleteExpense(id);
 
         return ResponseEntity.ok("expense with id " + id + " was deleted");
     }
-
-
 }
