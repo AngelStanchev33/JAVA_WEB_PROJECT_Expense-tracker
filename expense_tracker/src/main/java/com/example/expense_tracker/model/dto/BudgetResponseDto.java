@@ -7,8 +7,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
 
 @Getter
 @Setter
@@ -18,12 +16,11 @@ import java.time.YearMonth;
 public class BudgetResponseDto {
 
     private Long id;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private YearMonth month;
-    private BigDecimal limit;
+
+    private String month;
+    private BigDecimal budgetLimit;
     private BigDecimal spent;
-    private String userEmail;
+    private String user;
     
     // Calculated fields for frontend
     private BigDecimal remaining;

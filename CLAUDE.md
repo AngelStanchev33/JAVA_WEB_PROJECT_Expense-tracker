@@ -65,6 +65,31 @@
 - **Database normalization**
 - **RESTful conventions**
 
+## Budget System Implementation 📊
+
+### Budget Architecture Decisions:
+- **Optional budgets** - users can create expenses without budgets (like real apps)
+- **Monthly budgets** - per user, per month (YearMonth format)
+- **Auto-calculated spent** - spent field updates automatically from expenses
+- **Event-driven notifications** - ExpenseCreatedEvent triggers budget checks
+
+### Budget Components Status:
+✅ **BudgetEntity** - готов (user, month, budgetLimit, spent) - String month format
+✅ **NotificationEntity & NotificationTypeEnum** - готови
+✅ **ExpenseCreatedEvent** - опростен до (id, userEmail, amount)  
+✅ **Event publishing** - ExpenseService публикува event след създаване
+✅ **CreateBudgetDto & BudgetResponseDto** - готови с budgetLimit field
+✅ **BudgetController** - готов с GET /my и POST /create endpoints
+✅ **BudgetService & BudgetServiceImpl** - готови с основна бизнес логика
+🔄 **BudgetAlarmListener** - в процес на разработка
+✅ **SQL fixed** - премахнат MySQL reserved keyword 'limit' → 'budget_limit'
+
+### Budget Flow Design:
+1. User създава budget (optional)
+2. User създава expense → ExpenseCreatedEvent
+3. Ако има budget → update spent + notifications
+4. Ако няма budget → просто записва expense
+
 ## Спомени и Бележки
 - predloji mi da implemntirash promenite kogato poiskam assist  stiga si mi dawai da copirvam
 - Бележка: Припомни си да имплементираш исканите промени, когато поискат асистенция
@@ -79,6 +104,7 @@
 - Ще следваме guide за Spring SpEL implementation в expense tracker проекта, с цел научаване и подготовка за интервю. Ще имплементираме стъпка по стъпка, като ми помагаш с въпроси когато е необходимо.
 - ne mi preskachai ot class na class che me zabolq glavata sega pravi @expense_tracker\src\main\java\com\example\expense_tracker\config\ExpenseMethodSecurityExpressionHandler.java dokato ne go implemntirame drugo ne te iterruva taka pravi za vseki edin class, pitai me dali da premnivash na sledvashtiq
 - **Запомнено:** Точното място, докъдето сме стигнали в проекта
+- **Budget система в разработка** - имплементираме event-driven budget tracking с optional budgets
 - mahni tova s claude-a, kogato kachvame,  ne iskam da se znae
 
 ---
@@ -93,3 +119,5 @@ raboti vlena v contolera
 - === Creating MethodSecurityExpressionHandler Bean === === MethodSecurityConfig initialized == tva se printira koeot shte reche che beana se suzdva noqvno ne se izvika sushto taak sme antorirali @Primary MethodSecurityExpressionHandler
 - opravihme problema
 - i delete raobit
+- sloji poel budgets v @CLAUDE.md i opishi na kude otiwa razbrabotkata do tuk
+- zapishi controlerite bachakt na budgetService v @CLAUDE.md

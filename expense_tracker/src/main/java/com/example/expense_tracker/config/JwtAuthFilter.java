@@ -43,7 +43,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String jwtToken = authHeader.substring(7);
 
         if (jwtService.isTokenValid(jwtToken)) {
-            System.out.println("Token is VALID");
             UserDetails user = userDetails.loadUserByUsername(jwtService.extractEmail(jwtToken));
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -62,7 +61,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         } else {
             System.out.println("Token is INVALID - sending 401");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+
         }
     }
 }

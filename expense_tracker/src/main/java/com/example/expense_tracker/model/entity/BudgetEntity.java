@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.YearMonth;
 
 @Entity
 @Table(name = "budgets")
@@ -22,13 +21,13 @@ public class BudgetEntity extends BaseEntity{
     private UserEntity user;
 
     @NotNull
-    @Column(name = "month", nullable = false, length = 7, columnDefinition = "VARCHAR(7)")
-    private YearMonth month;
+    @Column(name = "month", nullable = false, length = 7)
+    private String month;
 
     @NotNull
     @Positive
-    @Column(name = "limit", nullable = false, precision = 19, scale = 2)
-    private BigDecimal limit;
+    @Column(name = "budget_limit", nullable = false, precision = 19, scale = 2)
+    private BigDecimal budgetLimit;
 
     @NotNull
     @PositiveOrZero

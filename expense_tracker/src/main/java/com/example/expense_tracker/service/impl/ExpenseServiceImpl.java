@@ -6,6 +6,7 @@ import com.example.expense_tracker.model.dto.ExpenseResponseDto;
 import com.example.expense_tracker.model.dto.UpdateExpenseDto;
 import com.example.expense_tracker.model.entity.ExpenseEntity;
 import com.example.expense_tracker.model.enums.CategoryEnum;
+import com.example.expense_tracker.model.event.ExpenseCreatedEvent;
 import com.example.expense_tracker.repository.CategoryRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
 import com.example.expense_tracker.repository.UserRepository;
@@ -13,6 +14,7 @@ import com.example.expense_tracker.service.ExpenseService;
 import com.example.expense_tracker.exception.CategoryNotFoundException;
 import com.example.expense_tracker.exception.UserNotFoundException;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +25,15 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ExpenseRepository expenseRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ExpenseServiceImpl(ModelMapper modelMapper, UserRepository userRepository, CategoryRepository
-            categoryRepository, ExpenseRepository expenseRepository) {
+            categoryRepository, ExpenseRepository expenseRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.expenseRepository = expenseRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -38,6 +42,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .setUser(email);
 
         ExpenseEntity expenseEntity = saveInDb(expenseResponseDto);
+        publishExpenseCreatedEvent(expenseResponseDto);
 
         expenseResponseDto.setId(expenseEntity.getId());
 
@@ -49,8 +54,9 @@ public class ExpenseServiceImpl implements ExpenseService {
         return expenseRepository
                 .findAllByUserEmail(userEmail)
                 .stream()
-                .map(expenseEntity -> modelMapper.map(expenseEntity, ExpenseResponseDto.class)
-                        .setCategory(expenseEntity.getCategory().getCategoryEnum().name()))
+                .map(entity -> modelMapper.map(entity, ExpenseResponseDto.class)
+                        .setCategory(entity.getCategory().getCategoryEnum().name())
+                        .setUser(entity.getUser().getEmail()))
                 .toList();
     }
 
@@ -77,7 +83,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public void deleteExpense(Long expenseId) {
         ExpenseEntity expenseEntity = expenseRepository.findById(expenseId)
-                .orElseThrow(()-> new ExpenseNotFoundException(expenseId));
+                .orElseThrow(() -> new ExpenseNotFoundException(expenseId));
 
         expenseRepository.delete(expenseEntity);
 
@@ -97,5 +103,13 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseEntity.setCategory(categoryRepository.findByCategoryEnum(CategoryEnum.valueOf(dto.getCategory().toUpperCase()))
                 .orElseThrow(() -> new CategoryNotFoundException(dto.getCategory())));
         return expenseRepository.save(expenseEntity);
+    }
+
+    private void publishExpenseCreatedEvent(ExpenseResponseDto expenseResponseDto) {
+        applicationEventPublisher.publishEvent(new ExpenseCreatedEvent(
+                expenseResponseDto.getId(),
+                expenseResponseDto.getUser(),
+                expenseResponseDto.getAmount()
+        ));
     }
 }
