@@ -17,6 +17,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -42,9 +44,10 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .setUser(email);
 
         ExpenseEntity expenseEntity = saveInDb(expenseResponseDto);
-        publishExpenseCreatedEvent(expenseResponseDto);
 
         expenseResponseDto.setId(expenseEntity.getId());
+
+        publishExpenseCreatedEvent(expenseResponseDto);
 
         return expenseResponseDto;
     }
@@ -107,9 +110,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     private void publishExpenseCreatedEvent(ExpenseResponseDto expenseResponseDto) {
         applicationEventPublisher.publishEvent(new ExpenseCreatedEvent(
-                expenseResponseDto.getId(),
-                expenseResponseDto.getUser(),
-                expenseResponseDto.getAmount()
-        ));
+                        expenseResponseDto.getId(),
+                        expenseResponseDto.getUser(),
+                        expenseResponseDto.getAmount(),
+                        expenseResponseDto.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))
+                )
+        );
     }
 }

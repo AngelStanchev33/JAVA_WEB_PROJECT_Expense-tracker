@@ -1,5 +1,6 @@
 package com.example.expense_tracker.web;
 
+import com.example.expense_tracker.exception.BudgetNotFoundException;
 import com.example.expense_tracker.exception.NotOwnerException;
 import com.example.expense_tracker.exception.CategoryNotFoundException;
 import com.example.expense_tracker.exception.ExpenseNotFoundException;
@@ -101,6 +102,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
+    @ExceptionHandler(BudgetNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleBudgetNotFound(BudgetNotFoundException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
 
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+        errorResponse.put("error", "Budget Not Found");
+        errorResponse.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
 
 }

@@ -10,7 +10,9 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "budgets")
+@Table(name = "budgets", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"user_id", "month"})
+})
 @Getter
 @Setter
 public class BudgetEntity extends BaseEntity{

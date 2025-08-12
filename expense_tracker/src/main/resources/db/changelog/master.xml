@@ -25,4 +25,6 @@
     <include file="db/changelog/v1.0/020-update-budget-scale-to-2.xml"/>
     <include file="db/changelog/v1.0/021-create-notifications-table.xml"/>
     <include file="db/changelog/v1.0/022-rename-budgets-limit-column.xml"/>
+    <include file="db/changelog/v1.0/023-delete-duplicate-budget.xml"/>
+    <include file="db/changelog/v1.0/024-add-unique-constraint-budgets.xml"/>
 </databaseChangeLog>

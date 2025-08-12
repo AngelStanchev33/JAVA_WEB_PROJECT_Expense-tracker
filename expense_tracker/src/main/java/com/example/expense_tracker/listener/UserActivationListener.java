@@ -19,6 +19,7 @@ public class UserActivationListener {
         emailService.sendRegistrationEmail(
                 event.getUserEmail(),
                 event.getUserNames());
-    }
 
+
+    }
 }
