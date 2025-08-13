@@ -2,10 +2,12 @@ package com.example.expense_tracker.web;
 
 import com.example.expense_tracker.model.dto.BudgetResponseDto;
 import com.example.expense_tracker.model.dto.CreateBudgetDto;
+import com.example.expense_tracker.model.dto.UpdateBudgetDto;
 import com.example.expense_tracker.service.BudgetService;
 import com.example.expense_tracker.service.impl.BudgetServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +40,15 @@ public class BudgetController {
         BudgetResponseDto budget = budgetService.createBudget(createBudgetDto, userEmail);
 
         return ResponseEntity.ok(budget);
+    }
+
+
+    @PreAuthorize("isOwner(#id)")
+    @PutMapping("/update/{id}")
+    public ResponseEntity<BudgetResponseDto> editBudget(@RequestBody @Valid UpdateBudgetDto updateBudgetDto,
+                                                        @PathVariable Long id) {
+        BudgetResponseDto budgetResponseDto = budgetService.updateBudget(id, updateBudgetDto);
+
+        return ResponseEntity.ok(budgetResponseDto);
     }
 }

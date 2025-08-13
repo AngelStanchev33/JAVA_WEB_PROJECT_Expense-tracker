@@ -4,6 +4,7 @@ import com.example.expense_tracker.exception.NotOwnerException;
 import com.example.expense_tracker.model.dto.CreateExpenseDto;
 import com.example.expense_tracker.model.dto.ExpenseResponseDto;
 import com.example.expense_tracker.model.dto.UpdateExpenseDto;
+import com.example.expense_tracker.service.EventPublishingService;
 import com.example.expense_tracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,11 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private final EventPublishingService eventPublishingServicel;
 
-    public ExpenseController(ExpenseService expenseService) {
+    public ExpenseController(ExpenseService expenseService, EventPublishingService eventPublishingServicel) {
         this.expenseService = expenseService;
+        this.eventPublishingServicel = eventPublishingServicel;
     }
 
     @PostMapping("/create")
@@ -30,6 +33,8 @@ public class ExpenseController {
 
         String userEmail = authentication.getName();
         ExpenseResponseDto response = expenseService.createExpense(dto, userEmail);
+
+        eventPublishingServicel.publishExpenseCreatedEvent(response);
 
         return ResponseEntity.ok(response);
     }

@@ -27,15 +27,13 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ExpenseRepository expenseRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ExpenseServiceImpl(ModelMapper modelMapper, UserRepository userRepository, CategoryRepository
-            categoryRepository, ExpenseRepository expenseRepository, ApplicationEventPublisher applicationEventPublisher) {
+            categoryRepository, ExpenseRepository expenseRepository) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.expenseRepository = expenseRepository;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -46,8 +44,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         ExpenseEntity expenseEntity = saveInDb(expenseResponseDto);
 
         expenseResponseDto.setId(expenseEntity.getId());
-
-        publishExpenseCreatedEvent(expenseResponseDto);
 
         return expenseResponseDto;
     }
@@ -108,13 +104,4 @@ public class ExpenseServiceImpl implements ExpenseService {
         return expenseRepository.save(expenseEntity);
     }
 
-    private void publishExpenseCreatedEvent(ExpenseResponseDto expenseResponseDto) {
-        applicationEventPublisher.publishEvent(new ExpenseCreatedEvent(
-                        expenseResponseDto.getId(),
-                        expenseResponseDto.getUser(),
-                        expenseResponseDto.getAmount(),
-                        expenseResponseDto.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))
-                )
-        );
-    }
 }

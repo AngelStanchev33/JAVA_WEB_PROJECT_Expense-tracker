@@ -145,3 +145,5 @@ raboti vlena v contolera
 - **Database**: Proper relations, migrations, constraints
 - **Business logic**: Complex budget calculations, notification system
 - **Testing**: Manual API testing with real scenarios
+- zapishi che predpohdam da se skipva approach
+- dobre vij kakuv plana ->shte napravim expense service i bugdet service unit testove nqma da izpozvlame model mapper a shte setvame directno taka nqma da sa mnogo dependecy-ta, uchase  che ne iskam  vishcko da mi se dawa na gotovo a prosoro napustviq

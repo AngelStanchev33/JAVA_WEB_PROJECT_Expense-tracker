@@ -49,9 +49,8 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
     private BigDecimal calculateRemainingPercentage(BigDecimal spentAmount, BigDecimal budgetLimit) {
         BigDecimal remaining = budgetLimit.subtract(spentAmount);
         return remaining
-                .divide(budgetLimit, 4, RoundingMode.HALF_UP)     // процент
-                .multiply(new BigDecimal("100"))
-                .setScale(0, RoundingMode.HALF_UP);
+                .divide(budgetLimit, 0, RoundingMode.HALF_UP)     // процент
+                .multiply(new BigDecimal("100"));
     }
 
     private NotificationEntity generateNotification(BigDecimal percentageLeft) {

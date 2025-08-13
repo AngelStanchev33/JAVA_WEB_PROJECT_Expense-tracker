@@ -6,4 +6,5 @@ public interface BudgetCalculationService {
 
     void calculateBudget(String userEmail, Long expenseId, String month, BigDecimal amount);
 
+
 }
