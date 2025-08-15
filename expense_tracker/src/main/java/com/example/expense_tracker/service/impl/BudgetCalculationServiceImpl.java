@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Optional;
 
 @Service
 public class BudgetCalculationServiceImpl implements BudgetCalculationService {
@@ -25,31 +26,36 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
 
     @Override
     public void calculateBudget(String userEmail, Long expenseId, String month, BigDecimal amount) {
-        BudgetEntity budgetEntity = budgetRepository.findByUserEmailAndAndMonth(userEmail, month).orElseThrow(
-                BudgetNotFoundException::new);
+        Optional<BudgetEntity> optionalEntity = budgetRepository.findByUserEmailAndAndMonth(userEmail, month);
 
-        BigDecimal spentAmount = budgetEntity.getSpent().add(amount);
-        BigDecimal percentageLeft = calculateRemainingPercentage(spentAmount, budgetEntity.getBudgetLimit());
+        if (optionalEntity.isEmpty()) {
+            // Няма budget за този месец - skip логиката
+            return;
+        }
 
+        BudgetEntity entity = optionalEntity.get();
+
+        BigDecimal spentAmount = entity.getSpent().add(amount);
+        BigDecimal percentageLeft = calculateRemainingPercentage(spentAmount, entity.getBudgetLimit());
 
         NotificationEntity alarm = generateNotification(percentageLeft);
-        
+
         if (alarm != null) {
-            alarm.setUser(budgetEntity.getUser());
-            alarm.setRelatedBudgetId(budgetEntity.getId());
+            alarm.setUser(entity.getUser());
+            alarm.setRelatedBudgetId(entity.getId());
             alarm.setRelatedExpenseId(expenseId);
             notificationRepository.save(alarm);
         }
 
-        budgetEntity.setSpent(spentAmount);
-        budgetRepository.save(budgetEntity);
+        entity.setSpent(spentAmount);
+        budgetRepository.save(entity);
 
     }
 
     private BigDecimal calculateRemainingPercentage(BigDecimal spentAmount, BigDecimal budgetLimit) {
         BigDecimal remaining = budgetLimit.subtract(spentAmount);
         return remaining
-                .divide(budgetLimit, 0, RoundingMode.HALF_UP)     // процент
+                .divide(budgetLimit, 2, RoundingMode.HALF_UP)     // процент
                 .multiply(new BigDecimal("100"));
     }
 

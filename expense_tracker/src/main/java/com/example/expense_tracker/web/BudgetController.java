@@ -42,13 +42,22 @@ public class BudgetController {
         return ResponseEntity.ok(budget);
     }
 
-
-    @PreAuthorize("isOwner(#id)")
+    @PreAuthorize("isBudgetOwner(#id)")
     @PutMapping("/update/{id}")
     public ResponseEntity<BudgetResponseDto> editBudget(@RequestBody @Valid UpdateBudgetDto updateBudgetDto,
                                                         @PathVariable Long id) {
         BudgetResponseDto budgetResponseDto = budgetService.updateBudget(id, updateBudgetDto);
 
         return ResponseEntity.ok(budgetResponseDto);
+    }
+
+    @PreAuthorize("isBudgetOwner(#id)")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteBudget(@PathVariable Long id) {
+        System.out.println("im in");
+
+        budgetService.deleteBudget(id);
+
+        return ResponseEntity.ok("budget with id " + id + " is deleted");
     }
 }

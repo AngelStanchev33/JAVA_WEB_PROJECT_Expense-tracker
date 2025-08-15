@@ -1,10 +1,12 @@
 package com.example.expense_tracker.testUtil;
 
 import com.example.expense_tracker.exception.CategoryNotFoundException;
+import com.example.expense_tracker.model.entity.BudgetEntity;
 import com.example.expense_tracker.model.entity.CategoryEntity;
 import com.example.expense_tracker.model.entity.ExpenseEntity;
 import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.model.enums.CategoryEnum;
+import com.example.expense_tracker.repository.BudgetRepository;
 import com.example.expense_tracker.repository.CategoryRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ public class TestDataUtil {
     private ExpenseRepository expenseRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private BudgetRepository budgetRepository;
 
     public ExpenseEntity createExpense(UserEntity ownerId, CategoryEnum category) {
         ExpenseEntity expense = new ExpenseEntity();
@@ -36,8 +40,23 @@ public class TestDataUtil {
         return expense;
     }
 
+    public BudgetEntity createBudget(UserEntity ownerId,
+                                     String month,
+                                     BigDecimal spent,
+                                     BigDecimal limit) {
+        BudgetEntity budget = new BudgetEntity();
+        budget.setMonth(month);
+        budget.setSpent(spent);
+        budget.setBudgetLimit(limit);
+        budget.setUser(ownerId);
+
+        budgetRepository.save(budget);
+
+        return budget;
+    }
+
     public void cleanUp() {
         expenseRepository.deleteAll();
-
+        budgetRepository.deleteAll();
     }
 }

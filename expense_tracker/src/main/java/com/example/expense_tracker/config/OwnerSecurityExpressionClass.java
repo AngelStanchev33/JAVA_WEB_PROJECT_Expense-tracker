@@ -1,6 +1,7 @@
 package com.example.expense_tracker.config;
 
 import com.example.expense_tracker.exception.NotOwnerException;
+import com.example.expense_tracker.service.BudgetService;
 import com.example.expense_tracker.service.ExpenseService;
 import lombok.Setter;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class OwnerSecurityExpressionClass extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 
     private ExpenseService expenseService;
+    private BudgetService budgetService;
     private Object filterObject;
     private Object returnObject;
 
@@ -19,7 +21,7 @@ public class OwnerSecurityExpressionClass extends SecurityExpressionRoot impleme
         super(authentication);
     }
 
-    public boolean isOwner(Long id) {
+    public boolean isExpenseOwner(Long id) {
         String username = currentUserName();
 
         if (username == null) {
@@ -30,11 +32,30 @@ public class OwnerSecurityExpressionClass extends SecurityExpressionRoot impleme
             throw new NotOwnerException("Expense ID is null");
         }
 
-        boolean isOwner = expenseService.isOwner(id, username);
-        if (!isOwner) {
+        boolean isOwnerExpense = expenseService.isOwner(id, username);
+        if (!isOwnerExpense) {
             throw new NotOwnerException("Access denied");
         }
         
+        return true; // Always true if no exception thrown
+    }
+
+    public boolean isBudgetOwner(Long id) {
+        String username = currentUserName();
+
+        if (username == null) {
+            throw new NotOwnerException("User not authenticated");
+        }
+
+        if (id == null) {
+            throw new NotOwnerException("Expense ID is null");
+        }
+
+        boolean isOwnerExpense = budgetService.isOwner(id, username);
+        if (!isOwnerExpense) {
+            throw new NotOwnerException("Access denied");
+        }
+
         return true; // Always true if no exception thrown
     }
 

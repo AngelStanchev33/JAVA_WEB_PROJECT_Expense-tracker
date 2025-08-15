@@ -38,7 +38,7 @@ public class ExpenseTrackerUserDetailsServiceTest {
     }
 
     @Test
-    void testLoadUserByUsername_UserFound() {
+    void test_LoadUserByUsername_UserFound() {
         UserEntity testUser = new UserEntity();
         testUser.setEmail(TEST_EMAIL);
         testUser.setPassword("topsecret");
@@ -84,7 +84,7 @@ public class ExpenseTrackerUserDetailsServiceTest {
     }
 
     @Test
-    void testLoadUserByUsername_UserNotFound() {
+    void test_LoadUserByUsername_UserNotFound() {
         when(mockUserRepository.findByEmail(NOT_EXISTENT_EMAIL)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(UsernameNotFoundException.class, () -> {

@@ -9,8 +9,12 @@ import java.util.List;
 public interface BudgetService {
     BudgetResponseDto createBudget(CreateBudgetDto createBudgetDto, String email);
 
-    BudgetResponseDto updateBudget(Long budgetOd, UpdateBudgetDto updateBudgetDto);
+    BudgetResponseDto updateBudget(Long budgetId, UpdateBudgetDto updateBudgetDto);
+
+    void deleteBudget(Long id);
 
     List<BudgetResponseDto> getUserBudgets(String email);
+    
+    boolean isOwner(Long budgetId, String email);
 
 }

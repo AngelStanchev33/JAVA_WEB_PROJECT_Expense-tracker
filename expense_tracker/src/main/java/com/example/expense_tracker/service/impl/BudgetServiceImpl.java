@@ -60,6 +60,14 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
+    public void deleteBudget(Long id) {
+        BudgetEntity entity = budgetRepository.findById(id).orElseThrow(()
+                -> new BudgetNotFoundException(id));
+
+        budgetRepository.delete(entity);
+    }
+
+    @Override
     public List<BudgetResponseDto> getUserBudgets(String email) {
         return budgetRepository.findByUserEmail(email)
                 .stream()
@@ -83,6 +91,11 @@ public class BudgetServiceImpl implements BudgetService {
                     return dto;
                 })
                 .toList();
+    }
+
+    @Override
+    public boolean isOwner(Long budgetId, String email) {
+        return budgetRepository.findByIdAndUserEmail(budgetId, email).isPresent();
     }
 
 

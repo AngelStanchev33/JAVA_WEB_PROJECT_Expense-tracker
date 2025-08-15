@@ -13,4 +13,6 @@ public interface BudgetRepository extends JpaRepository<BudgetEntity, Long> {
     List<BudgetEntity> findByUserEmail(String email);
 
     Optional<BudgetEntity> findByUserEmailAndAndMonth(String email, String month);
+
+    Optional<BudgetEntity> findByIdAndUserEmail(Long budgetId, String email);
 }

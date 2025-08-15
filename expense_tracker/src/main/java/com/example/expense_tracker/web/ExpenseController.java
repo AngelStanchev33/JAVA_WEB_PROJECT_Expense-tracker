@@ -19,11 +19,11 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
-    private final EventPublishingService eventPublishingServicel;
+    private final EventPublishingService eventPublishingService;
 
-    public ExpenseController(ExpenseService expenseService, EventPublishingService eventPublishingServicel) {
+    public ExpenseController(ExpenseService expenseService, EventPublishingService eventPublishingService) {
         this.expenseService = expenseService;
-        this.eventPublishingServicel = eventPublishingServicel;
+        this.eventPublishingService = eventPublishingService;
     }
 
     @PostMapping("/create")
@@ -34,7 +34,7 @@ public class ExpenseController {
         String userEmail = authentication.getName();
         ExpenseResponseDto response = expenseService.createExpense(dto, userEmail);
 
-        eventPublishingServicel.publishExpenseCreatedEvent(response);
+        eventPublishingService.publishExpenseCreatedEvent(response);
 
         return ResponseEntity.ok(response);
     }
@@ -48,7 +48,7 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses);
     }
 
-    @PreAuthorize("isOwner(#id)")
+    @PreAuthorize("isExpenseOwner(#id)")
     @PutMapping("/update/{id}")
     public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable Long id, @Valid
     @RequestBody UpdateExpenseDto updateExpenseDto) {
@@ -57,7 +57,7 @@ public class ExpenseController {
         return ResponseEntity.ok(expenseResponseDto);
     }
 
-    @PreAuthorize("isOwner(#id)")
+    @PreAuthorize("isExpenseOwner(#id)")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteExpense(@PathVariable Long id, Authentication authentication) {
         String username = authentication.getName();
