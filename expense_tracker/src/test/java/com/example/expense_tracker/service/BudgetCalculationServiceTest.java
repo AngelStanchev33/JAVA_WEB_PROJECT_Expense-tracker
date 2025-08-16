@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.mockito.ArgumentCaptor;
+import com.example.expense_tracker.model.enums.NotificationTypeEnum;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
@@ -42,6 +46,7 @@ public class BudgetCalculationServiceTest {
 
     @Test
     void calculateBudget_Should_Send_Notification() {
+        // Arrange
         ExpenseCreatedEvent event = new ExpenseCreatedEvent(1L, "test@gmail.com",
                 BigDecimal.valueOf(500), "2025-08");
         UserEntity owner = createUser();
@@ -50,11 +55,36 @@ public class BudgetCalculationServiceTest {
         when(budgetRepository.findByUserEmailAndAndMonth(event.getUserEmail(),
                 event.getMonth())).thenReturn(Optional.of(budget));
 
+        // Act
         budgetCalculationService.calculateBudget(event.getUserEmail(), event.getExpenseId(),
                 event.getMonth(), event.getAmount());
 
-        verify(notificationRepository, times(1)).save(any(NotificationEntity.class));
+        // Assert - използваме ArgumentCaptor за да "прихванем" какво се записва
+        ArgumentCaptor<NotificationEntity> captor = ArgumentCaptor.forClass(NotificationEntity.class);
+        verify(notificationRepository, times(1)).save(captor.capture());
 
+        // Сега можем да проверим съдържанието на записания обект
+        NotificationEntity savedNotification = captor.getValue();
+        assertEquals("💸 Halfway to broke! 50% budget gone", savedNotification.getMessage());
+        assertEquals(NotificationTypeEnum.BUDGET_WARNING_50, savedNotification.getType());
+        assertEquals(owner.getId(), savedNotification.getUser().getId());
+        assertEquals(budget.getId(), savedNotification.getRelatedBudgetId());
+        assertEquals(event.getExpenseId(), savedNotification.getRelatedExpenseId());
+    }
+
+    @Test
+    void calculateBudget_Should_DoNothing_When_NoBudget() {
+        // Arrange - връщаме празен Optional (няма budget)
+        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+                .thenReturn(Optional.empty());
+
+        // Act
+        budgetCalculationService.calculateBudget("test@gmail.com", 1L, "2025-08",
+                BigDecimal.valueOf(500));
+
+        // Assert - нищо не трябва да се случи
+        verify(notificationRepository, never()).save(any());
+        verify(budgetRepository, never()).save(any());
     }
 
     private BudgetEntity createBudget(BigDecimal limit, UserEntity owner, String month, BigDecimal spent) {
