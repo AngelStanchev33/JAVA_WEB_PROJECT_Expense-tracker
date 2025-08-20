@@ -1,12 +1,14 @@
 package com.example.expense_tracker.service.impl;
 
 import com.example.expense_tracker.config.ForexApiConfig;
+import com.example.expense_tracker.model.dto.ExRateDTO;
 import com.example.expense_tracker.model.dto.ExRatesDTO;
 import com.example.expense_tracker.model.entity.CurrencyEntity;
 import com.example.expense_tracker.model.entity.ExRateEntity;
 import com.example.expense_tracker.repository.CurrencyRepository;
 import com.example.expense_tracker.repository.ExRateRepository;
 import com.example.expense_tracker.service.ExRateService;
+import com.example.expense_tracker.service.KafkaPublicationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,6 +33,7 @@ public class ExRateServiceImpl implements ExRateService {
     private final CurrencyRepository currencyRepository;
     private final ForexApiConfig forexApiConfig;
     private final RestClient restClient;
+    private final KafkaPublicationService kafkaPublicationService;
 
     @Override
     public List<String> allSupportedCurrencies() {
@@ -115,5 +119,21 @@ public class ExRateServiceImpl implements ExRateService {
             // Cross-rate calculation: toRate / fromRate
             return Optional.of(toOpt.get().divide(fromOpt.get(), 2, RoundingMode.HALF_DOWN));
         }
+    }
+
+    @Override
+    public void publishExRates() {
+        List<ExRateDTO> exRates = exRateRepository
+                .findAll()
+                .stream()
+                .sorted(Comparator.comparing(entity -> entity.getCurrency().getCode()))
+                .map(this::mapToExRateDTO)
+                .toList();
+
+        exRates.forEach(kafkaPublicationService::publishExRate);
+    }
+
+    private ExRateDTO mapToExRateDTO(ExRateEntity entity) {
+        return new ExRateDTO(entity.getCurrency().getCode(), entity.getRate());
     }
 }
