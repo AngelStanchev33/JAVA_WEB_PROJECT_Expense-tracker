@@ -1,0 +1,16 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+       http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="v1.0-024" author="Angel">
+        <comment>Add unique constraint on user_id and month columns in budgets table</comment>
+        
+        <addUniqueConstraint 
+            tableName="budgets" 
+            columnNames="user_id,month" 
+            constraintName="uk_budgets_user_month"/>
+    </changeSet>
+</databaseChangeLog>
