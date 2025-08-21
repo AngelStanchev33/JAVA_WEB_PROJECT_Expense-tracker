@@ -5,9 +5,8 @@ jwt:
 forex:
   api:
     key: ${FOREX_API_KEY:c92e55f7de3d4bb8bbd3d22241bb1755}
-    url: "https://openexchangerates.org/api/latest.json?app_id={app_id}"
+    url: "https://openexchangerates.org/api/latest.json?app_id={app_id}&symbols=EUR,BGN"
     base: "USD"
-  init-ex-rates: ${INIT_EX_RATES:false}
 
 mail:
   expenseTracker: "expensetracker@example.com"
@@ -22,6 +21,9 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/master.xml
     enabled: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
   jpa:
     hibernate:
       ddl-auto: none

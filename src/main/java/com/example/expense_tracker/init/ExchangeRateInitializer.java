@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 @Order(0)
 @Component
-@ConditionalOnProperty(name = "forex.init-ex-rates", havingValue = "true")
 @RequiredArgsConstructor
 public class ExchangeRateInitializer implements CommandLineRunner {
 

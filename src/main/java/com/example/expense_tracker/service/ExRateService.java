@@ -17,5 +17,5 @@ public interface ExRateService {
     
     BigDecimal convert(String from, String to, BigDecimal amount);
     
-    void publishExRates();
+//    void publishExRates();
 }

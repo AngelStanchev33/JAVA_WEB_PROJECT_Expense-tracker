@@ -12,6 +12,7 @@ import com.example.expense_tracker.service.KafkaPublicationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -24,7 +25,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class ExRateServiceImpl implements ExRateService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExRateServiceImpl.class);
@@ -33,7 +33,19 @@ public class ExRateServiceImpl implements ExRateService {
     private final CurrencyRepository currencyRepository;
     private final ForexApiConfig forexApiConfig;
     private final RestClient restClient;
-    private final KafkaPublicationService kafkaPublicationService;
+
+//    @Autowired
+//    private KafkaPublicationService kafkaPublicationService;
+
+    public ExRateServiceImpl(ExRateRepository exRateRepository,
+                           CurrencyRepository currencyRepository,
+                           ForexApiConfig forexApiConfig,
+                           RestClient restClient) {
+        this.exRateRepository = exRateRepository;
+        this.currencyRepository = currencyRepository;
+        this.forexApiConfig = forexApiConfig;
+        this.restClient = restClient;
+    }
 
     @Override
     public List<String> allSupportedCurrencies() {
@@ -121,17 +133,17 @@ public class ExRateServiceImpl implements ExRateService {
         }
     }
 
-    @Override
-    public void publishExRates() {
-        List<ExRateDTO> exRates = exRateRepository
-                .findAll()
-                .stream()
-                .sorted(Comparator.comparing(entity -> entity.getCurrency().getCode()))
-                .map(this::mapToExRateDTO)
-                .toList();
-
-        exRates.forEach(kafkaPublicationService::publishExRate);
-    }
+//    @Override
+//    public void publishExRates() {
+//        List<ExRateDTO> exRates = exRateRepository
+//                .findAll()
+//                .stream()
+//                .sorted(Comparator.comparing(entity -> entity.getCurrency().getCode()))
+//                .map(this::mapToExRateDTO)
+//                .toList();
+//
+//        exRates.forEach(kafkaPublicationService::publishExRate);
+//    }
 
     private ExRateDTO mapToExRateDTO(ExRateEntity entity) {
         return new ExRateDTO(entity.getCurrency().getCode(), entity.getRate());
