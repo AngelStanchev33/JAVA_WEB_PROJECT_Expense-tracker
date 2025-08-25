@@ -1,5 +1,6 @@
 package com.example.expense_tracker.model.dto;
 
+import com.example.expense_tracker.model.entity.CurrencyEntity;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,4 +30,7 @@ public class CreateExpenseDto {
     @NotNull(message = "Date is required")
     @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate date;
+
+    @NotNull(message = "Currency is required")
+    private CurrencyEntity currency;
 }

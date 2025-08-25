@@ -33,8 +33,13 @@ public class ExpenseEntity extends BaseEntity {
     @NotNull
     @Column(name = "expense_date", nullable = false)
     private LocalDate expenseDate;
+
     @Lob
     @Column(name = "description", columnDefinition = "TEXT", nullable = true)
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "currency_id")
+    private CurrencyEntity currency;
 
 }

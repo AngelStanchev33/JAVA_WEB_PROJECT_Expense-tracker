@@ -1,5 +1,6 @@
 package com.example.expense_tracker.model.dto;
 
+import com.example.expense_tracker.model.entity.CurrencyEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -18,4 +19,5 @@ public class ExpenseResponseDto {
     private String category;
     private LocalDate date;
     private String user;
+    private CurrencyEntity currency;
 }

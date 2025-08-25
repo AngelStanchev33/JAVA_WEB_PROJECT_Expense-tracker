@@ -36,4 +36,8 @@ public class BudgetEntity extends BaseEntity{
     @Column(name = "spent", nullable = false, precision = 19, scale = 2)
     private BigDecimal spent = BigDecimal.ZERO;
 
+    @ManyToOne
+    @JoinColumn(name = "currecy_id")
+    private CurrencyEntity currency;
+
 }

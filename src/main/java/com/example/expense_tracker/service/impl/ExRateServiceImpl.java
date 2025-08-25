@@ -38,9 +38,9 @@ public class ExRateServiceImpl implements ExRateService {
 //    private KafkaPublicationService kafkaPublicationService;
 
     public ExRateServiceImpl(ExRateRepository exRateRepository,
-                           CurrencyRepository currencyRepository,
-                           ForexApiConfig forexApiConfig,
-                           RestClient restClient) {
+                             CurrencyRepository currencyRepository,
+                             ForexApiConfig forexApiConfig,
+                             RestClient restClient) {
         this.exRateRepository = exRateRepository;
         this.currencyRepository = currencyRepository;
         this.forexApiConfig = forexApiConfig;
@@ -54,11 +54,6 @@ public class ExRateServiceImpl implements ExRateService {
                 .stream()
                 .map(CurrencyEntity::getCode)
                 .toList();
-    }
-
-    @Override
-    public boolean hasInitializedExRates() {
-        return exRateRepository.count() > 0;
     }
 
     @Override
@@ -76,14 +71,11 @@ public class ExRateServiceImpl implements ExRateService {
     public void updateRates(ExRatesDTO exRatesDTO) {
         LOGGER.info("Updating {} rates.", exRatesDTO.rates().size());
 
-        // Validate base currency
         if (!forexApiConfig.getBase().equals(exRatesDTO.base())) {
             throw new IllegalArgumentException("Exchange rates base currency mismatch");
         }
 
-        // Update or create each currency rate
         exRatesDTO.rates().forEach((currencyCode, rate) -> {
-            // Find or create currency
             CurrencyEntity currency = currencyRepository.findByCode(currencyCode)
                     .orElseGet(() -> {
                         CurrencyEntity newCurrency = new CurrencyEntity();
@@ -91,12 +83,12 @@ public class ExRateServiceImpl implements ExRateService {
                         return currencyRepository.save(newCurrency);
                     });
 
-            // Find or create exchange rate
             ExRateEntity exRateEntity = exRateRepository.findByCurrencyCode(currencyCode)
                     .orElseGet(() -> {
                         ExRateEntity newRate = new ExRateEntity();
                         newRate.setCurrency(currency);
-                        return newRate;
+                        newRate.setRate(rate);
+                        return exRateRepository.save(newRate);
                     });
 
             exRateEntity.setRate(rate);
