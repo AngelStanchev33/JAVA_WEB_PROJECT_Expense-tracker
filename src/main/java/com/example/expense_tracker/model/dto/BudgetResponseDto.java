@@ -16,11 +16,11 @@ import java.math.BigDecimal;
 public class BudgetResponseDto {
 
     private Long id;
-
     private String month;
     private BigDecimal budgetLimit;
     private BigDecimal spent;
     private String user;
+    private String currencyCode;
     
     // Calculated fields for frontend
     private BigDecimal remaining;

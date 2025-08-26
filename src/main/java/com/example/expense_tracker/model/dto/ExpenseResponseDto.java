@@ -1,10 +1,8 @@
 package com.example.expense_tracker.model.dto;
 
-import com.example.expense_tracker.model.entity.CurrencyEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.springframework.security.core.parameters.P;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,5 +17,5 @@ public class ExpenseResponseDto {
     private String category;
     private LocalDate date;
     private String user;
-    private CurrencyEntity currency;
+    private String currencyCode;
 }

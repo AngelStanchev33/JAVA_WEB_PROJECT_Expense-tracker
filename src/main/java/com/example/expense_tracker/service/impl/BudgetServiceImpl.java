@@ -1,12 +1,14 @@
 package com.example.expense_tracker.service.impl;
 
 import com.example.expense_tracker.exception.BudgetNotFoundException;
+import com.example.expense_tracker.exception.CurrencyNotFoundException;
 import com.example.expense_tracker.exception.UserNotFoundException;
 import com.example.expense_tracker.model.dto.BudgetResponseDto;
 import com.example.expense_tracker.model.dto.CreateBudgetDto;
 import com.example.expense_tracker.model.dto.UpdateBudgetDto;
 import com.example.expense_tracker.model.entity.BudgetEntity;
 import com.example.expense_tracker.repository.BudgetRepository;
+import com.example.expense_tracker.repository.CurrencyRepository;
 import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.BudgetService;
 import org.modelmapper.ModelMapper;
@@ -14,18 +16,19 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
 
     private final BudgetRepository budgetRepository;
     private final UserRepository userRepository;
+    private final CurrencyRepository currencyRepository;
     private final ModelMapper modelMapper;
 
-    public BudgetServiceImpl(BudgetRepository budgetRepository, UserRepository userRepository, ModelMapper modelMapper) {
+    public BudgetServiceImpl(BudgetRepository budgetRepository, UserRepository userRepository, CurrencyRepository currencyRepository, ModelMapper modelMapper) {
         this.budgetRepository = budgetRepository;
         this.userRepository = userRepository;
+        this.currencyRepository = currencyRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -99,10 +102,12 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
 
-    private BudgetEntity saveInDb(BudgetResponseDto budgetResponseDto) {
-        BudgetEntity budgetEntity = modelMapper.map(budgetResponseDto, BudgetEntity.class);
-        budgetEntity.setUser(userRepository.findByEmail(budgetResponseDto.getUser())
-                .orElseThrow(() -> new UserNotFoundException(budgetResponseDto.getUser())));
+    private BudgetEntity saveInDb(BudgetResponseDto dto) {
+        BudgetEntity budgetEntity = modelMapper.map(dto, BudgetEntity.class);
+        budgetEntity.setUser(userRepository.findByEmail(dto.getUser())
+                .orElseThrow(() -> new UserNotFoundException(dto.getUser())));
+        budgetEntity.setCurrency(currencyRepository.findByCode(dto.getCurrencyCode())
+                .orElseThrow(() -> new CurrencyNotFoundException(dto.getCurrencyCode())));
 
         budgetRepository.save(budgetEntity);
 

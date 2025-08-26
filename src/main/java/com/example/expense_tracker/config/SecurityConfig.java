@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                                .requestMatchers("/", "/login", "/register").permitAll()
+                                .requestMatchers("/", "/login", "/register", "/error").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                                 .anyRequest()
                                 .authenticated()
@@ -44,11 +44,18 @@ public class SecurityConfig {
                 .oauth2Login(oauth -> oauth.successHandler(oAuthSuccessHandler))
                 .exceptionHandling(ex -> ex
                     .authenticationEntryPoint((request, response, authException) -> {
+                        System.out.println("🚨 AuthenticationEntryPoint triggered!");
+                        System.out.println("Request: " + request.getRequestURI());
+                        System.out.println("Exception: " + authException.getMessage());
+                        System.out.println("Auth header: " + request.getHeader("Authorization"));
                         response.setStatus(HttpStatus.UNAUTHORIZED.value());
                         response.setContentType("application/json");
                         response.getWriter().write("{\"error\":\"Invalid credentials\"}");
                     })
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
+                        System.out.println("🚨 AccessDeniedHandler triggered!");
+                        System.out.println("Request: " + request.getRequestURI());
+                        System.out.println("Exception: " + accessDeniedException.getMessage());
                         response.setStatus(HttpStatus.FORBIDDEN.value());
                         response.setContentType("application/json");
                         response.getWriter().write("{\"error\":\"Access denied - not owner\"}");

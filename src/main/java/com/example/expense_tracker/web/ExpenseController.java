@@ -2,9 +2,11 @@ package com.example.expense_tracker.web;
 
 import com.example.expense_tracker.exception.NotOwnerException;
 import com.example.expense_tracker.model.dto.CreateExpenseDto;
+import com.example.expense_tracker.model.dto.ExRatesDTO;
 import com.example.expense_tracker.model.dto.ExpenseResponseDto;
 import com.example.expense_tracker.model.dto.UpdateExpenseDto;
 import com.example.expense_tracker.service.EventPublishingService;
+import com.example.expense_tracker.service.ExRateService;
 import com.example.expense_tracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ public class ExpenseController {
         this.expenseService = expenseService;
         this.eventPublishingService = eventPublishingService;
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<ExpenseResponseDto> createExpense(

@@ -3,8 +3,10 @@ package com.example.expense_tracker.web;
 import com.example.expense_tracker.exception.BudgetNotFoundException;
 import com.example.expense_tracker.exception.NotOwnerException;
 import com.example.expense_tracker.exception.CategoryNotFoundException;
+import com.example.expense_tracker.exception.CurrencyNotFoundException;
 import com.example.expense_tracker.exception.ExpenseNotFoundException;
 import com.example.expense_tracker.exception.UserNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -52,6 +54,18 @@ public class GlobalExceptionHandler {
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.NOT_FOUND.value());
         errorResponse.put("error", "Category Not Found");
+        errorResponse.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(CurrencyNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCurrencyNotFound(CurrencyNotFoundException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.NOT_FOUND.value());
+        errorResponse.put("error", "Currency Not Found");
         errorResponse.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -112,6 +126,24 @@ public class GlobalExceptionHandler {
         errorResponse.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.CONFLICT.value());
+        
+        if (ex.getMessage().contains("uk_budgets_user_month")) {
+            errorResponse.put("error", "Duplicate Budget");
+            errorResponse.put("message", "Budget for this month already exists");
+        } else {
+            errorResponse.put("error", "Data Integrity Violation");
+            errorResponse.put("message", "A constraint violation occurred");
+        }
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
 }

@@ -1,24 +1,22 @@
 package com.example.expense_tracker.service.impl;
 
+import com.example.expense_tracker.exception.CurrencyNotFoundException;
 import com.example.expense_tracker.exception.ExpenseNotFoundException;
 import com.example.expense_tracker.model.dto.CreateExpenseDto;
 import com.example.expense_tracker.model.dto.ExpenseResponseDto;
 import com.example.expense_tracker.model.dto.UpdateExpenseDto;
 import com.example.expense_tracker.model.entity.ExpenseEntity;
 import com.example.expense_tracker.model.enums.CategoryEnum;
-import com.example.expense_tracker.model.event.ExpenseCreatedEvent;
 import com.example.expense_tracker.repository.CategoryRepository;
+import com.example.expense_tracker.repository.CurrencyRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
 import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.ExpenseService;
 import com.example.expense_tracker.exception.CategoryNotFoundException;
 import com.example.expense_tracker.exception.UserNotFoundException;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -28,12 +26,15 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final CategoryRepository categoryRepository;
     private final ExpenseRepository expenseRepository;
 
+    private final CurrencyRepository currencyRepository;
+
     public ExpenseServiceImpl(ModelMapper modelMapper, UserRepository userRepository, CategoryRepository
-            categoryRepository, ExpenseRepository expenseRepository) {
+            categoryRepository, ExpenseRepository expenseRepository, CurrencyRepository currencyRepository) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.expenseRepository = expenseRepository;
+        this.currencyRepository = currencyRepository;
     }
 
     @Override
@@ -101,6 +102,9 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .orElseThrow(() -> new UserNotFoundException(dto.getUser())));
         expenseEntity.setCategory(categoryRepository.findByCategoryEnum(CategoryEnum.valueOf(dto.getCategory().toUpperCase()))
                 .orElseThrow(() -> new CategoryNotFoundException(dto.getCategory())));
+        expenseEntity.setCurrency(currencyRepository.findByCode(dto.getCurrencyCode())
+                .orElseThrow(() -> new CurrencyNotFoundException(dto.getCurrencyCode())));
+
         return expenseRepository.save(expenseEntity);
     }
 

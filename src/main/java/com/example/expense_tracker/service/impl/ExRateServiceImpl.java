@@ -8,7 +8,6 @@ import com.example.expense_tracker.model.entity.ExRateEntity;
 import com.example.expense_tracker.repository.CurrencyRepository;
 import com.example.expense_tracker.repository.ExRateRepository;
 import com.example.expense_tracker.service.ExRateService;
-import com.example.expense_tracker.service.KafkaPublicationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +33,6 @@ public class ExRateServiceImpl implements ExRateService {
     private final ForexApiConfig forexApiConfig;
     private final RestClient restClient;
 
-//    @Autowired
-//    private KafkaPublicationService kafkaPublicationService;
 
     public ExRateServiceImpl(ExRateRepository exRateRepository,
                              CurrencyRepository currencyRepository,
@@ -125,19 +122,5 @@ public class ExRateServiceImpl implements ExRateService {
         }
     }
 
-//    @Override
-//    public void publishExRates() {
-//        List<ExRateDTO> exRates = exRateRepository
-//                .findAll()
-//                .stream()
-//                .sorted(Comparator.comparing(entity -> entity.getCurrency().getCode()))
-//                .map(this::mapToExRateDTO)
-//                .toList();
-//
-//        exRates.forEach(kafkaPublicationService::publishExRate);
-//    }
 
-    private ExRateDTO mapToExRateDTO(ExRateEntity entity) {
-        return new ExRateDTO(entity.getCurrency().getCode(), entity.getRate());
-    }
 }

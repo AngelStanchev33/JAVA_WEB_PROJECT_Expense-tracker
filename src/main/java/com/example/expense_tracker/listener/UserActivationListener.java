@@ -16,10 +16,12 @@ public class UserActivationListener {
 
     @EventListener
     public void userRegistered(UserRegisteredEvent event) {
-        emailService.sendRegistrationEmail(
-                event.getUserEmail(),
-                event.getUserNames());
-
-
+        try {
+            emailService.sendRegistrationEmail(
+                    event.getUserEmail(),
+                    event.getUserNames());
+        } catch (Exception e) {
+            System.err.println("Failed to send registration email to " + event.getUserEmail() + ": " + e.getMessage());
+        }
     }
 }
