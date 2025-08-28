@@ -14,6 +14,8 @@ public interface BudgetService {
     void deleteBudget(Long id);
 
     List<BudgetResponseDto> getUserBudgets(String email);
+
+    BudgetResponseDto getBudgetById(Long id);
     
     boolean isOwner(Long budgetId, String email);
 

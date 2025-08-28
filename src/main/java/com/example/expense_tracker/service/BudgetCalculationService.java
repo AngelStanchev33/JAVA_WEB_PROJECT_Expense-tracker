@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public interface BudgetCalculationService {
 
-    void calculateBudget(String userEmail, Long expenseId, String month, BigDecimal amount);
-
+    void calculateBudgetWhenExpenseIsCreated(String userEmail, Long expenseId, String month);
+    void calculateBudgetWhenBudgetIsCreated(Long id);
 
 }

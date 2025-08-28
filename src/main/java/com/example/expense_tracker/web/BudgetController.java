@@ -4,6 +4,7 @@ import com.example.expense_tracker.model.dto.BudgetResponseDto;
 import com.example.expense_tracker.model.dto.CreateBudgetDto;
 import com.example.expense_tracker.model.dto.UpdateBudgetDto;
 import com.example.expense_tracker.service.BudgetService;
+import com.example.expense_tracker.service.EventPublishingService;
 import com.example.expense_tracker.service.ExRateService;
 import com.example.expense_tracker.service.impl.BudgetServiceImpl;
 import jakarta.validation.Valid;
@@ -20,8 +21,11 @@ public class BudgetController {
 
     private final BudgetService budgetService;
 
-    public BudgetController(BudgetService budgetService) {
+    private final EventPublishingService eventPublishingService;
+
+    public BudgetController(BudgetService budgetService, EventPublishingService eventPublishingService) {
         this.budgetService = budgetService;
+        this.eventPublishingService = eventPublishingService;
     }
 
 
@@ -34,12 +38,21 @@ public class BudgetController {
         return ResponseEntity.ok(userBudgets);
     }
 
+    @PreAuthorize("isBudgetOwner(#id)")
+    @GetMapping("/{id}")
+    public ResponseEntity<BudgetResponseDto> getBudgetById(@PathVariable Long id) {
+        BudgetResponseDto budget = budgetService.getBudgetById(id);
+        return ResponseEntity.ok(budget);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<BudgetResponseDto> createBudget(@RequestBody @Valid CreateBudgetDto createBudgetDto,
                                                           Authentication authentication) {
         String userEmail = authentication.getName();
 
         BudgetResponseDto budget = budgetService.createBudget(createBudgetDto, userEmail);
+
+        eventPublishingService.publishBudgetCreatedEvent(budget);
 
         return ResponseEntity.ok(budget);
     }
@@ -49,6 +62,8 @@ public class BudgetController {
     public ResponseEntity<BudgetResponseDto> editBudget(@RequestBody @Valid UpdateBudgetDto updateBudgetDto,
                                                         @PathVariable Long id) {
         BudgetResponseDto budgetResponseDto = budgetService.updateBudget(id, updateBudgetDto);
+
+        eventPublishingService.publishBudgetCreatedEvent(budgetResponseDto);
 
         return ResponseEntity.ok(budgetResponseDto);
     }

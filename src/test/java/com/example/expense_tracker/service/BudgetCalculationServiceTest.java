@@ -7,6 +7,7 @@ import com.example.expense_tracker.model.entity.UserRoleEntity;
 import com.example.expense_tracker.model.enums.UserRoleEnum;
 import com.example.expense_tracker.model.event.ExpenseCreatedEvent;
 import com.example.expense_tracker.repository.BudgetRepository;
+import com.example.expense_tracker.repository.ExpenseRepository;
 import com.example.expense_tracker.repository.NotificationRepository;
 import com.example.expense_tracker.service.impl.BudgetCalculationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,28 +37,37 @@ public class BudgetCalculationServiceTest {
     @Mock
     private NotificationRepository notificationRepository;
 
+    @Mock
+    private ExpenseRepository expenseRepository;
+
+    @Mock
+    private ExRateService exRateService;
 
     private BudgetCalculationService budgetCalculationService;
 
+
+
+
     @BeforeEach
     void setUp() {
-        budgetCalculationService = new BudgetCalculationServiceImpl(budgetRepository, notificationRepository);
+        budgetCalculationService = new BudgetCalculationServiceImpl(budgetRepository,
+                expenseRepository, notificationRepository, exRateService);
     }
 
     @Test
     void calculateBudget_Should_Send_Notification() {
         // Arrange
         ExpenseCreatedEvent event = new ExpenseCreatedEvent(1L, "test@gmail.com",
-                BigDecimal.valueOf(500), "2025-08");
+                BigDecimal.valueOf(500), "BGN", "2025-08");
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
 
-        when(budgetRepository.findByUserEmailAndAndMonth(event.getUserEmail(),
-                event.getMonth())).thenReturn(Optional.of(budget));
+        when(budgetRepository.findByUserEmailAndAndMonth(event.userEmail(),
+                event.month())).thenReturn(Optional.of(budget));
 
         // Act
-        budgetCalculationService.calculateBudget(event.getUserEmail(), event.getExpenseId(),
-                event.getMonth(), event.getAmount());
+        budgetCalculationService.calculateBudgetWhenExpenseIsCreated(event.userEmail(), event.expenseId(),
+                event.month());
 
         // Assert - използваме ArgumentCaptor за да "прихванем" какво се записва
         ArgumentCaptor<NotificationEntity> captor = ArgumentCaptor.forClass(NotificationEntity.class);
@@ -69,7 +79,7 @@ public class BudgetCalculationServiceTest {
         assertEquals(NotificationTypeEnum.BUDGET_WARNING_50, savedNotification.getType());
         assertEquals(owner.getId(), savedNotification.getUser().getId());
         assertEquals(budget.getId(), savedNotification.getRelatedBudgetId());
-        assertEquals(event.getExpenseId(), savedNotification.getRelatedExpenseId());
+        assertEquals(event.expenseId(), savedNotification.getRelatedExpenseId());
     }
 
     @Test
@@ -79,8 +89,7 @@ public class BudgetCalculationServiceTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        budgetCalculationService.calculateBudget("test@gmail.com", 1L, "2025-08",
-                BigDecimal.valueOf(500));
+        budgetCalculationService.calculateBudgetWhenExpenseIsCreated("test@gmail.com", 1L, "2025-08");
 
         // Assert - нищо не трябва да се случи
         verify(notificationRepository, never()).save(any());

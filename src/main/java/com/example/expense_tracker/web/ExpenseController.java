@@ -52,10 +52,19 @@ public class ExpenseController {
     }
 
     @PreAuthorize("isExpenseOwner(#id)")
+    @GetMapping("/{id}")
+    public ResponseEntity<ExpenseResponseDto> getExpenseById(@PathVariable Long id) {
+        ExpenseResponseDto expense = expenseService.getExpenseById(id);
+        return ResponseEntity.ok(expense);
+    }
+
+    @PreAuthorize("isExpenseOwner(#id)")
     @PutMapping("/update/{id}")
     public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable Long id, @Valid
     @RequestBody UpdateExpenseDto updateExpenseDto) {
         ExpenseResponseDto expenseResponseDto = expenseService.updateExpense(id, updateExpenseDto);
+
+        eventPublishingService.publishExpenseCreatedEvent(expenseResponseDto);
 
         return ResponseEntity.ok(expenseResponseDto);
     }

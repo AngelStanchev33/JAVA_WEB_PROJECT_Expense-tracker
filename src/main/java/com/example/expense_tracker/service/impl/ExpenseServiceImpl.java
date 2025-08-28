@@ -25,7 +25,6 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ExpenseRepository expenseRepository;
-
     private final CurrencyRepository currencyRepository;
 
     public ExpenseServiceImpl(ModelMapper modelMapper, UserRepository userRepository, CategoryRepository
@@ -54,10 +53,15 @@ public class ExpenseServiceImpl implements ExpenseService {
         return expenseRepository
                 .findAllByUserEmail(userEmail)
                 .stream()
-                .map(entity -> modelMapper.map(entity, ExpenseResponseDto.class)
-                        .setCategory(entity.getCategory().getCategoryEnum().name())
-                        .setUser(entity.getUser().getEmail()))
+                .map(this::buildExpenseResponseDto)
                 .toList();
+    }
+
+    @Override
+    public ExpenseResponseDto getExpenseById(Long id) {
+        ExpenseEntity expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new ExpenseNotFoundException(id));
+        return buildExpenseResponseDto(expense);
     }
 
     @Override
@@ -65,19 +69,29 @@ public class ExpenseServiceImpl implements ExpenseService {
         ExpenseEntity expense = expenseRepository.findById(id)
                 .orElseThrow(() -> new ExpenseNotFoundException(id));
 
-        expense.setAmount(updateExpenseDto.getAmount());
-        expense.setCategory(categoryRepository
-                .findByCategoryEnum(CategoryEnum.valueOf(
-                        updateExpenseDto.getCategory()))
-                .orElseThrow(() -> new CategoryNotFoundException(updateExpenseDto.getCategory())));
-        expense.setExpenseDate(updateExpenseDto.getDate());
-        expense.setDescription(updateExpenseDto.getDescription());
+        if (updateExpenseDto.getAmount() != null) {
+            expense.setAmount(updateExpenseDto.getAmount());
+        }
+        if (updateExpenseDto.getCategory() != null) {
+            expense.setCategory(categoryRepository
+                    .findByCategoryEnum(CategoryEnum.valueOf(updateExpenseDto.getCategory()))
+                    .orElseThrow(() -> new CategoryNotFoundException(updateExpenseDto.getCategory())));
+        }
+        if (updateExpenseDto.getDate() != null) {
+            expense.setExpenseDate(updateExpenseDto.getDate());
+        }
+        if (updateExpenseDto.getDescription() != null) {
+            expense.setDescription(updateExpenseDto.getDescription());
+        }
+        if (updateExpenseDto.getCurrency() != null) {
+            expense.setCurrency(currencyRepository.findByCode(updateExpenseDto.getCurrency())
+                    .orElseThrow(() -> new CurrencyNotFoundException(updateExpenseDto.getCurrency())));
+        }
 
-        expenseRepository.save(expense);
+        expense = expenseRepository.save(expense);
 
-        return modelMapper.map(expense, ExpenseResponseDto.class)
-                .setCategory(expense.getCategory().getCategoryEnum().name());
-
+        // 4. Convert to ResponseDTO with helper method
+        return buildExpenseResponseDto(expense);
     }
 
     @Override
@@ -106,6 +120,13 @@ public class ExpenseServiceImpl implements ExpenseService {
                 .orElseThrow(() -> new CurrencyNotFoundException(dto.getCurrencyCode())));
 
         return expenseRepository.save(expenseEntity);
+    }
+
+    private ExpenseResponseDto buildExpenseResponseDto(ExpenseEntity entity) {
+        return modelMapper.map(entity, ExpenseResponseDto.class)
+                .setCategory(entity.getCategory().getCategoryEnum().name())
+                .setUser(entity.getUser().getEmail())
+                .setCurrencyCode(entity.getCurrency().getCode());
     }
 
 }

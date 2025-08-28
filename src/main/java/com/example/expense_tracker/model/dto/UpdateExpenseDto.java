@@ -1,8 +1,8 @@
 package com.example.expense_tracker.model.dto;
 
+import com.fasterxml.jackson.core.Base64Variant;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -13,18 +13,22 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Accessors(chain = true)
+@Schema(description = "Data Transfer Object for updating expense information")
 public class UpdateExpenseDto {
     
-    @NotBlank(message = "Description is required")
+    @Schema(description = "Expense description", example = "Coffee at Starbucks")
     private String description;
     
-    @NotNull(message = "Amount is required")
     @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
+    @Schema(description = "Expense amount", example = "15.50")
     private BigDecimal amount;
     
-    @NotNull(message = "Category is required")
+    @Schema(description = "Expense category", example = "FOOD")
     private String category;
     
-    @NotNull(message = "Date is required")
-    private LocalDate date;  // Премахнах @FutureOrPresent - може да редактираме стари expenses
+    @Schema(description = "Expense date", example = "2024-03-15")
+    private LocalDate date;
+
+    @Schema(description = "Change currency to BGN or EUR", example = "BGN")
+    private String currency;
 }

@@ -31,4 +31,5 @@
     <include file="db/changelog/v1.0/025-drop-user-prefrence.xml"/>
     <include file="db/changelog/v1.0/026-add_currency_id_column_in_expenses.xml"/>
     <include file="db/changelog/v1.0/027.add_currency_id_column_in_budgets.xml"/>
+    <include file="db/changelog/v1.0/028-fix-budget-currency-foreign-key.xml"/>
 </databaseChangeLog>

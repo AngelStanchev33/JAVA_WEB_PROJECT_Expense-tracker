@@ -2,30 +2,39 @@ package com.example.expense_tracker.service.impl;
 
 import com.example.expense_tracker.exception.BudgetNotFoundException;
 import com.example.expense_tracker.model.entity.BudgetEntity;
+import com.example.expense_tracker.model.entity.ExpenseEntity;
 import com.example.expense_tracker.model.entity.NotificationEntity;
 import com.example.expense_tracker.model.enums.NotificationTypeEnum;
 import com.example.expense_tracker.repository.BudgetRepository;
+import com.example.expense_tracker.repository.ExpenseRepository;
 import com.example.expense_tracker.repository.NotificationRepository;
 import com.example.expense_tracker.service.BudgetCalculationService;
+import com.example.expense_tracker.service.ExRateService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Month;
+import java.time.YearMonth;
 import java.util.Optional;
 
 @Service
 public class BudgetCalculationServiceImpl implements BudgetCalculationService {
 
     private final BudgetRepository budgetRepository;
+    private final ExpenseRepository expenseRepository;
     private final NotificationRepository notificationRepository;
+    private final ExRateService exRateService;
 
-    public BudgetCalculationServiceImpl(BudgetRepository budgetRepository, NotificationRepository notificationRepository) {
+    public BudgetCalculationServiceImpl(BudgetRepository budgetRepository, ExpenseRepository expenseRepository, NotificationRepository notificationRepository, ExRateService exRateService) {
         this.budgetRepository = budgetRepository;
+        this.expenseRepository = expenseRepository;
         this.notificationRepository = notificationRepository;
+        this.exRateService = exRateService;
     }
 
     @Override
-    public void calculateBudget(String userEmail, Long expenseId, String month, BigDecimal amount) {
+    public void calculateBudgetWhenExpenseIsCreated(String userEmail, Long expenseId, String month) {
         Optional<BudgetEntity> optionalEntity = budgetRepository.findByUserEmailAndAndMonth(userEmail, month);
 
         if (optionalEntity.isEmpty()) {
@@ -33,23 +42,59 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
             return;
         }
 
-        BudgetEntity entity = optionalEntity.get();
+        BudgetEntity budget = optionalEntity.get();
+        updateBudgetSpentAndNotifications(budget, userEmail, expenseId);
+    }
 
-        BigDecimal spentAmount = entity.getSpent().add(amount);
-        BigDecimal percentageLeft = calculateRemainingPercentage(spentAmount, entity.getBudgetLimit());
+    @Override
+    public void calculateBudgetWhenBudgetIsCreated(Long id) {
+        BudgetEntity budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new BudgetNotFoundException(id));
 
-        NotificationEntity alarm = generateNotification(percentageLeft);
+        updateBudgetSpentAndNotifications(budget, budget.getUser().getEmail(), null);
+    }
 
-        if (alarm != null) {
-            alarm.setUser(entity.getUser());
-            alarm.setRelatedBudgetId(entity.getId());
-            alarm.setRelatedExpenseId(expenseId);
-            notificationRepository.save(alarm);
+    private void updateBudgetSpentAndNotifications(BudgetEntity budget, String userEmail, Long expenseId) {
+        // Parse month to get year and month integers
+        YearMonth yearMonth = YearMonth.parse(budget.getMonth());
+        int yearOfExpense = yearMonth.getYear();
+        int monthOfExpense = yearMonth.getMonthValue();
+
+        // Recalculate total spent from ALL expenses for the month
+        BigDecimal totalSpent = expenseRepository
+                .findAllByUserEmailAndYearAndMonth(userEmail, yearOfExpense, monthOfExpense)
+                .stream()
+                .map(expense -> convertExpenseAmountToBudgetCurrency(expense, budget))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Update budget with recalculated spent amount
+        budget.setSpent(totalSpent);
+        budgetRepository.save(budget);
+
+        // Generate notifications if budget thresholds are reached
+        BigDecimal percentageLeft = calculateRemainingPercentage(totalSpent, budget.getBudgetLimit());
+        NotificationEntity notification = generateNotification(percentageLeft);
+
+        if (notification != null) {
+            notification.setUser(budget.getUser());
+            notification.setRelatedBudgetId(budget.getId());
+            if (expenseId != null) {
+                notification.setRelatedExpenseId(expenseId);
+            }
+            notificationRepository.save(notification);
+        }
+    }
+
+    private BigDecimal convertExpenseAmountToBudgetCurrency(ExpenseEntity expense, BudgetEntity budget) {
+        if (expense.getCurrency().getCode().equals(budget.getCurrency().getCode())) {
+            return expense.getAmount();
         }
 
-        entity.setSpent(spentAmount);
-        budgetRepository.save(entity);
-
+        return exRateService.convert(
+                expense.getCurrency().getCode(),
+                budget.getCurrency().getCode(),
+                expense.getAmount()
+        );
     }
 
     private BigDecimal calculateRemainingPercentage(BigDecimal spentAmount, BigDecimal budgetLimit) {

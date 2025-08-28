@@ -12,6 +12,8 @@ import com.example.expense_tracker.repository.CurrencyRepository;
 import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.BudgetService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +21,8 @@ import java.util.List;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BudgetServiceImpl.class);
 
     private final BudgetRepository budgetRepository;
     private final UserRepository userRepository;
@@ -49,17 +53,23 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public BudgetResponseDto updateBudget(Long budgetId, UpdateBudgetDto updateBudgetDto) {
-        BudgetResponseDto budgetResponseDto = modelMapper.map(updateBudgetDto, BudgetResponseDto.class);
-
         BudgetEntity entity = budgetRepository.findById(budgetId)
                 .orElseThrow(() -> new BudgetNotFoundException(budgetId));
-
-        entity.setBudgetLimit(updateBudgetDto.getBudgetLimit());
-        entity.setMonth(updateBudgetDto.getMonth());
-
-        budgetRepository.save(entity);
-
-        return budgetResponseDto;
+        
+        if (updateBudgetDto.getBudgetLimit() != null) {
+            entity.setBudgetLimit(updateBudgetDto.getBudgetLimit());
+        }
+        if (updateBudgetDto.getMonth() != null) {
+            entity.setMonth(updateBudgetDto.getMonth());
+        }
+        if (updateBudgetDto.getCurrency() != null) {
+            entity.setCurrency(currencyRepository.findByCode(updateBudgetDto.getCurrency())
+                    .orElseThrow(() -> new CurrencyNotFoundException(updateBudgetDto.getCurrency())));
+        }
+        
+        entity = budgetRepository.save(entity);
+        
+        return buildBudgetResponseDto(entity);
     }
 
     @Override
@@ -72,28 +82,40 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public List<BudgetResponseDto> getUserBudgets(String email) {
+        logger.info("Fetching budgets for user: {}", email);
+        
         return budgetRepository.findByUserEmail(email)
                 .stream()
-                .map(entity -> {
-                    BudgetResponseDto dto = modelMapper.map(entity, BudgetResponseDto.class)
-                            .setUser(entity.getUser().getEmail());
-
-                    BigDecimal remaining = entity.getBudgetLimit().subtract(entity.getSpent());
-                    dto.setRemaining(remaining);
-
-                    if (entity.getBudgetLimit().compareTo(BigDecimal.ZERO) > 0) {
-                        double percentage = entity.getSpent()
-                                .divide(entity.getBudgetLimit(), 0, java.math.RoundingMode.HALF_UP)
-                                .multiply(new BigDecimal("100"))
-                                .doubleValue();
-                        dto.setSpentPercentage(percentage);
-                    } else {
-                        dto.setSpentPercentage(0.0);
-                    }
-
-                    return dto;
-                })
+                .map(this::buildBudgetResponseDto)
                 .toList();
+    }
+
+    @Override
+    public BudgetResponseDto getBudgetById(Long id) {
+        BudgetEntity budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new BudgetNotFoundException(id));
+        return buildBudgetResponseDto(budget);
+    }
+
+    private BudgetResponseDto buildBudgetResponseDto(BudgetEntity entity) {
+        BudgetResponseDto dto = modelMapper.map(entity, BudgetResponseDto.class)
+                .setUser(entity.getUser().getEmail())
+                .setCurrencyCode(entity.getCurrency().getCode());
+
+        BigDecimal remaining = entity.getBudgetLimit().subtract(entity.getSpent());
+        dto.setRemaining(remaining);
+
+        if (entity.getBudgetLimit().compareTo(BigDecimal.ZERO) > 0) {
+            double percentage = entity.getSpent()
+                    .divide(entity.getBudgetLimit(), 2, java.math.RoundingMode.HALF_UP)
+                    .multiply(new BigDecimal("100"))
+                    .doubleValue();
+            dto.setSpentPercentage(percentage);
+        } else {
+            dto.setSpentPercentage(0.0);
+        }
+
+        return dto;
     }
 
     @Override

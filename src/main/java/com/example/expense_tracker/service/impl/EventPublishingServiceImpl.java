@@ -1,6 +1,9 @@
 package com.example.expense_tracker.service.impl;
 
+import com.example.expense_tracker.model.dto.BudgetResponseDto;
+import com.example.expense_tracker.model.dto.CreateBudgetDto;
 import com.example.expense_tracker.model.dto.ExpenseResponseDto;
+import com.example.expense_tracker.model.event.BudgetCreatedEvent;
 import com.example.expense_tracker.model.event.ExpenseCreatedEvent;
 import com.example.expense_tracker.service.EventPublishingService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,8 +26,18 @@ public class EventPublishingServiceImpl implements EventPublishingService {
                 expenseResponseDto.getId(),
                 expenseResponseDto.getUser(),
                 expenseResponseDto.getAmount(),
+                expenseResponseDto.getCurrencyCode(),
                 expenseResponseDto.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))
+
         ));
 
+
+    }
+
+    @Override
+    public void publishBudgetCreatedEvent(BudgetResponseDto budgetResponseDto) {
+        applicationEventPublisher.publishEvent(new BudgetCreatedEvent(
+                budgetResponseDto.getId()
+        ));
     }
 }

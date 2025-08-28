@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="1.0.28" author="Angel">
+        <comment>Fix foreign key constraint for budgets.currency_id to reference currencies table</comment>
+        
+        <!-- Drop the incorrect foreign key constraint -->
+        <dropForeignKeyConstraint baseTableName="budgets" constraintName="fk_budgets_currency"/>
+        
+        <!-- Add the correct foreign key constraint -->
+        <addForeignKeyConstraint 
+            baseTableName="budgets" 
+            baseColumnNames="currency_id" 
+            constraintName="fk_budgets_currency" 
+            referencedTableName="currencies" 
+            referencedColumnNames="id"
+            onUpdate="CASCADE"
+            onDelete="RESTRICT"/>
+    </changeSet>
+
+</databaseChangeLog>

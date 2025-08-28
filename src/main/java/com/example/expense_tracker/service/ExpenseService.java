@@ -12,6 +12,8 @@ public interface ExpenseService {
 
     List<ExpenseResponseDto> getUserExpenses(String userEmail);
 
+    ExpenseResponseDto getExpenseById(Long id);
+
     ExpenseResponseDto updateExpense(Long id, UpdateExpenseDto updateExpenseDto);
 
     void deleteExpense(Long expenseId);
