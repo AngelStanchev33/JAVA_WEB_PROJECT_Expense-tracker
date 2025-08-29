@@ -1,6 +1,7 @@
 package com.example.expense_tracker.web;
 
 import com.example.expense_tracker.model.dto.CreateBudgetDto;
+import com.example.expense_tracker.model.dto.UpdateBudgetDto;
 import com.example.expense_tracker.model.dto.CreateExpenseDto;
 import com.example.expense_tracker.model.entity.BudgetEntity;
 import com.example.expense_tracker.model.entity.ExpenseEntity;
@@ -66,7 +67,8 @@ public class BudgetControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, ADMIN_ROLES);
         BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
                 new BigDecimal("150.00"),
-                new BigDecimal("1000.00"));
+                new BigDecimal("1000.00"),
+                "BGN");
 
         mockMvc.perform(delete("/budgets/delete/{id}", budget.getId())
                         .with(csrf()))
@@ -79,7 +81,8 @@ public class BudgetControllerTest {
         UserEntity owner = userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
                 new BigDecimal("150.00"),
-                new BigDecimal("1000.00"));
+                new BigDecimal("1000.00"),
+                "EUR");
 
         mockMvc.perform(delete("/budgets/delete/{id}", budget.getId())
                         .with(csrf()))
@@ -92,7 +95,8 @@ public class BudgetControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, ADMIN_ROLES);
         BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
                 new BigDecimal("150.00"),
-                new BigDecimal("1000.00"));
+                new BigDecimal("1000.00"),
+                "BGN");
         mockMvc.perform(delete("/budgets/delete/{id}", budget.getId())
                         .with(csrf()))
                 .andExpect(status().isForbidden());
@@ -121,7 +125,8 @@ public class BudgetControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.month").value("2024-08"))
-                .andExpect(jsonPath("$.budgetLimit").value(1000.0));
+                .andExpect(jsonPath("$.budgetLimit").value(1000.0))
+                .andExpect(jsonPath("$.currencyCode").value("BGN"));
     }
 
     @Test
@@ -150,8 +155,10 @@ public class BudgetControllerTest {
     @WithMockUser(username = "test@test.bg", roles = "USER")
     void test_AuthenticatedUser_CanGetMyBudgets() throws Exception {
         UserEntity user = userTestDataUtil.createUser("test@test.bg", USER_ROLES);
-        testDataUtil.createBudget(user, "2024-08", new BigDecimal("150.00"), new BigDecimal("1000.00"));
-        testDataUtil.createBudget(user, "2024-09", new BigDecimal("200.00"), new BigDecimal("1200.00"));
+        testDataUtil.createBudget(user, "2024-08", new BigDecimal("150.00"),
+                new BigDecimal("1000.00"), "EUR");
+        testDataUtil.createBudget(user, "2024-09", new BigDecimal("200.00"),
+                new BigDecimal("1200.00"), "BGN");
 
         mockMvc.perform(get("/budgets/my"))
                 .andExpect(status().isOk())
@@ -165,9 +172,13 @@ public class BudgetControllerTest {
         // Create user and their budgets
         UserEntity user1 = userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         UserEntity user2 = userTestDataUtil.createUser("other@test.bg", USER_ROLES);
-        
-        testDataUtil.createBudget(user1, "2024-08", new BigDecimal("150.00"), new BigDecimal("1000.00"));
-        testDataUtil.createBudget(user2, "2024-08", new BigDecimal("200.00"), new BigDecimal("1200.00")); // Other user's budget
+
+        testDataUtil.createBudget(user1, "2024-08", new BigDecimal("150.00"),
+                new BigDecimal("1000.00"),
+                "BGN");
+        testDataUtil.createBudget(user2, "2024-08", new BigDecimal("200.00"),
+                new BigDecimal("1200.00"),
+                "BGN"); // Other user's budget
 
         mockMvc.perform(get("/budgets/my"))
                 .andExpect(status().isOk())
@@ -175,10 +186,159 @@ public class BudgetControllerTest {
                 .andExpect(jsonPath("$.length()").value(1)); // Only user1's budget
     }
 
-    private CreateBudgetDto createValidBudgetDto() {
-        return new CreateBudgetDto().setMonth("2024-08")
-                .setBudgetLimit(BigDecimal.valueOf(1000));
+    // GET /{id} ENDPOINT TESTS
+    @Test
+    void test_AnonymousGetBudgetById_Returns_Unauthorized() throws Exception {
+        UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
+        BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
+                new BigDecimal("150.00"),
+                new BigDecimal("1000.00"),
+                "BGN");
+
+        mockMvc.perform(get("/budgets/{id}", budget.getId()))
+                .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @WithMockUser(username = "test@test.bg", roles = "USER")
+    void test_Owner_CanGetBudgetById() throws Exception {
+        UserEntity owner = userTestDataUtil.createUser("test@test.bg", USER_ROLES);
+        BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
+                new BigDecimal("150.00"),
+                new BigDecimal("1000.00"),
+                "BGN");
 
+        mockMvc.perform(get("/budgets/{id}", budget.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(budget.getId()))
+                .andExpect(jsonPath("$.month").value("2024-08"))
+                .andExpect(jsonPath("$.budgetLimit").value(1000.0))
+                .andExpect(jsonPath("$.spent").value(150.0))
+                .andExpect(jsonPath("$.currencyCode").value("BGN"));
+    }
+
+    @Test
+    @WithMockUser(username = "test@test.bg", roles = "USER")
+    void test_NonOwner_CantGetBudgetById() throws Exception {
+        UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
+        BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
+                new BigDecimal("150.00"),
+                new BigDecimal("1000.00"),
+                "BGN");
+
+        mockMvc.perform(get("/budgets/{id}", budget.getId()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "test@test.bg", roles = "USER")
+    void test_GetNonExistentBudget_Returns_NotFound() throws Exception {
+        userTestDataUtil.createUser("test@test.bg", USER_ROLES);
+        Long nonExistentId = 99999L;
+
+        mockMvc.perform(get("/budgets/{id}", nonExistentId))
+                .andExpect(status().isForbidden());
+    }
+
+    // PUT /update/{id} ENDPOINT TESTS
+    @Test
+    void test_AnonymousUpdateBudget_Returns_Unauthorized() throws Exception {
+        UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
+        BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
+                new BigDecimal("150.00"),
+                new BigDecimal("1000.00"),
+                "BGN");
+        UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
+
+        mockMvc.perform(put("/budgets/update/{id}", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "test@test.bg", roles = "USER")
+    void test_Owner_CanUpdateBudget() throws Exception {
+        UserEntity owner = userTestDataUtil.createUser("test@test.bg", USER_ROLES);
+        BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
+                new BigDecimal("150.00"),
+                new BigDecimal("1000.00"),
+                "BGN");
+        UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
+
+        mockMvc.perform(put("/budgets/update/{id}", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.month").value("2024-12"))
+                .andExpect(jsonPath("$.budgetLimit").value(1500.0))
+                .andExpect(jsonPath("$.currencyCode").value("EUR"));
+    }
+
+    @Test
+    @WithMockUser(username = "test@test.bg", roles = "USER")
+    void test_NonOwner_CantUpdateBudget() throws Exception {
+        UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
+        BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
+                new BigDecimal("150.00"),
+                new BigDecimal("1000.00"),
+                "BGN");
+        UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
+
+        mockMvc.perform(put("/budgets/update/{id}", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "test@test.bg", roles = "USER")
+    void test_UpdateNonExistentBudget_Returns_Forbidden() throws Exception {
+        userTestDataUtil.createUser("test@test.bg", USER_ROLES);
+        UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
+        Long nonExistentId = 99999L;
+
+        mockMvc.perform(put("/budgets/update/{id}", nonExistentId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto))
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "test@test.bg", roles = "USER")
+    void test_UpdateBudgetWithInvalidData_Returns_BadRequest() throws Exception {
+        UserEntity owner = userTestDataUtil.createUser("test@test.bg", USER_ROLES);
+        BudgetEntity budget = testDataUtil.createBudget(owner, "2024-08",
+                new BigDecimal("150.00"),
+                new BigDecimal("1000.00"),
+                "BGN");
+        
+        UpdateBudgetDto invalidDto = new UpdateBudgetDto()
+                .setMonth("") // Invalid - blank
+                .setBudgetLimit(new BigDecimal("-100.00")); // Invalid - negative
+
+        mockMvc.perform(put("/budgets/update/{id}", budget.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDto))
+                        .with(csrf()))
+                .andExpect(status().isBadRequest());
+    }
+
+    private CreateBudgetDto createValidBudgetDto() {
+        return new CreateBudgetDto()
+                .setMonth("2024-08")
+                .setBudgetLimit(BigDecimal.valueOf(1000))
+                .setCurrencyCode("BGN");
+    }
+
+    private UpdateBudgetDto createValidUpdateBudgetDto() {
+        return new UpdateBudgetDto()
+                .setMonth("2024-12")
+                .setBudgetLimit(new BigDecimal("1500.00"))
+                .setCurrency("EUR");
+    }
 }

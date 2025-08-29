@@ -28,7 +28,6 @@ public class ExpenseController {
         this.eventPublishingService = eventPublishingService;
     }
 
-
     @PostMapping("/create")
     public ResponseEntity<ExpenseResponseDto> createExpense(
             @Valid @RequestBody CreateExpenseDto dto,

@@ -8,6 +8,7 @@ import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.model.enums.CategoryEnum;
 import com.example.expense_tracker.repository.BudgetRepository;
 import com.example.expense_tracker.repository.CategoryRepository;
+import com.example.expense_tracker.repository.CurrencyRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,8 +26,10 @@ public class TestDataUtil {
     private CategoryRepository categoryRepository;
     @Autowired
     private BudgetRepository budgetRepository;
+    @Autowired
+    private CurrencyRepository currencyRepository;
 
-    public ExpenseEntity createExpense(UserEntity ownerId, CategoryEnum category) {
+    public ExpenseEntity createExpense(UserEntity ownerId, CategoryEnum category, String currencyCode) {
         ExpenseEntity expense = new ExpenseEntity();
         expense.setUser(ownerId);
         expense.setExpenseDate(LocalDate.now());
@@ -34,6 +37,9 @@ public class TestDataUtil {
                 .orElseThrow(() -> new CategoryNotFoundException(category + "not found")));
         expense.setDescription("test");
         expense.setAmount(BigDecimal.valueOf(2.50));
+        expense.setCurrency(currencyRepository.findByCode(currencyCode)
+                .orElseThrow(() -> new CategoryNotFoundException(currencyCode)));
+
 
         expenseRepository.save(expense);
 
@@ -43,12 +49,15 @@ public class TestDataUtil {
     public BudgetEntity createBudget(UserEntity ownerId,
                                      String month,
                                      BigDecimal spent,
-                                     BigDecimal limit) {
+                                     BigDecimal limit,
+                                     String currencyCode) {
         BudgetEntity budget = new BudgetEntity();
         budget.setMonth(month);
         budget.setSpent(spent);
         budget.setBudgetLimit(limit);
         budget.setUser(ownerId);
+        budget.setCurrency(currencyRepository.findByCode(currencyCode)
+                .orElseThrow(() -> new CategoryNotFoundException(currencyCode)));
 
         budgetRepository.save(budget);
 
