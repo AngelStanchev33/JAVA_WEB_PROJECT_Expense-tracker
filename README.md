@@ -11,7 +11,9 @@ docker compose up
 ```
 
 API: `http://localhost:8080`
+
 SWAGGER: `http://localhost:8080/swagger-ui/index.html`
+
 GOOGLE LOGIN: `http://localhost:8080/oauth2/authorization/google`
 
 ## Features
