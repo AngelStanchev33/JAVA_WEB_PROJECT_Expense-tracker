@@ -1,0 +1,35 @@
+# Build artifacts
+target/
+# Keep built JAR files for Docker
+!build/libs/*.jar
+
+# Gradle files
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Git
+.git/
+.gitignore
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Other
+README.md
+CLAUDE.md
+docker-compose.yml
+Dockerfile
