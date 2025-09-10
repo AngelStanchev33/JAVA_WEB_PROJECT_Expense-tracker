@@ -20,7 +20,6 @@ API: `http://localhost:8080`
 SWAGGER: `http://localhost:8080/swagger-ui/index.html`
 
 GOOGLE LOGIN: `http://localhost:8080/oauth2/authorization/google`
->>>>>>> 90509b44ac578f6e50cedaa394d69c29a0baa1c3
 
 ## Features
 
@@ -71,4 +70,3 @@ Spring Boot • JWT • MySQL • Docker • Event-Driven Architecture
 Built for learning modern Spring Boot development.
 =======
 Built for learning modern Spring Boot development.
->>>>>>> 90509b44ac578f6e50cedaa394d69c29a0baa1c3
