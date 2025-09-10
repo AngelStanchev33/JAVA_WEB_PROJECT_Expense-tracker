@@ -12,14 +12,9 @@ docker compose up
 
 API: `http://localhost:8080`
 
-<<<<<<< HEAD
 **Useful Links:**
 - [Swagger UI](http://localhost:8080/swagger-ui/index.html) - API Documentation
 - [Google OAuth2](http://localhost:8080/oauth2/authorization/google) - Google Login
-=======
-SWAGGER: `http://localhost:8080/swagger-ui/index.html`
-
-GOOGLE LOGIN: `http://localhost:8080/oauth2/authorization/google`
 
 ## Features
 
@@ -66,7 +61,4 @@ curl -X POST http://localhost:8080/auth/login \
 
 Spring Boot • JWT • MySQL • Docker • Event-Driven Architecture
 
-<<<<<<< HEAD
-Built for learning modern Spring Boot development.
-=======
 Built for learning modern Spring Boot development.
