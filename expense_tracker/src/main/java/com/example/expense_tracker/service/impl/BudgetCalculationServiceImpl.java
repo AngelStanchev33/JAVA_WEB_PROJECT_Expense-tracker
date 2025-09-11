@@ -4,10 +4,12 @@ import com.example.expense_tracker.exception.BudgetNotFoundException;
 import com.example.expense_tracker.model.entity.BudgetEntity;
 import com.example.expense_tracker.model.entity.ExpenseEntity;
 import com.example.expense_tracker.model.entity.NotificationEntity;
+import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.model.enums.NotificationTypeEnum;
 import com.example.expense_tracker.repository.BudgetRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
 import com.example.expense_tracker.repository.NotificationRepository;
+import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.BudgetCalculationService;
 import com.example.expense_tracker.service.ExRateService;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Month;
 import java.time.YearMonth;
 import java.util.Optional;
 
@@ -27,17 +28,26 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
     private final NotificationRepository notificationRepository;
     private final ExRateService exRateService;
 
-    public BudgetCalculationServiceImpl(BudgetRepository budgetRepository, ExpenseRepository expenseRepository, NotificationRepository notificationRepository, ExRateService exRateService) {
+    private final UserRepository userRepository;
+
+    public BudgetCalculationServiceImpl(BudgetRepository budgetRepository, ExpenseRepository expenseRepository, NotificationRepository notificationRepository, ExRateService exRateService, UserRepository userRepository) {
         this.budgetRepository = budgetRepository;
         this.expenseRepository = expenseRepository;
         this.notificationRepository = notificationRepository;
         this.exRateService = exRateService;
+        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
     public void calculateBudgetWhenExpenseIsCreated(String userEmail, Long expenseId, String month) {
-        Optional<BudgetEntity> optionalEntity = budgetRepository.findByUserEmailAndAndMonth(userEmail, month);
+        Optional<UserEntity> user = userRepository.findByEmail(userEmail);
+
+        if (user.isEmpty()) {
+            return;
+        }
+
+        Optional<BudgetEntity> optionalEntity = budgetRepository.findByUserAndMonth(user, month);
 
         if (optionalEntity.isEmpty()) {
             return;

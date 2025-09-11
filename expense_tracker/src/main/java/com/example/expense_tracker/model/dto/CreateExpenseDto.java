@@ -1,5 +1,7 @@
 package com.example.expense_tracker.model.dto;
 
+import com.example.expense_tracker.model.enums.CategoryEnum;
+import com.example.expense_tracker.model.validation.ValidEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -26,8 +28,9 @@ public class CreateExpenseDto {
     @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
     private BigDecimal amount;
     
-    @Schema(description = "Expense category", example = "Food")
+    @Schema(description = "Expense category", example = "FOOD")
     @NotBlank(message = "Category is required")
+    @ValidEnum(enumClass = CategoryEnum.class, message = "Invalid category. Valid values: FOOD, BILLS, TRANSPORT, ENTERTAINMENT, OTHER")
     private String category;
     
     @Schema(description = "Expense date", example = "2025-08-25")

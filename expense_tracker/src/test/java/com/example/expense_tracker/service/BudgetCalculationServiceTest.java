@@ -11,6 +11,7 @@ import com.example.expense_tracker.model.event.ExpenseCreatedEvent;
 import com.example.expense_tracker.repository.BudgetRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
 import com.example.expense_tracker.repository.NotificationRepository;
+import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.impl.BudgetCalculationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,13 +46,16 @@ public class BudgetCalculationServiceTest {
     @Mock
     private ExRateService exRateService;
 
+    @Mock
+    private UserRepository userRepository;
+
     private BudgetCalculationService budgetCalculationService;
 
 
     @BeforeEach
     void setUp() {
         budgetCalculationService = new BudgetCalculationServiceImpl(budgetRepository,
-                expenseRepository, notificationRepository, exRateService);
+                expenseRepository, notificationRepository, exRateService, userRepository);
     }
 
     @Test
@@ -61,8 +65,8 @@ public class BudgetCalculationServiceTest {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
 
-        when(budgetRepository.findByUserEmailAndAndMonth(event.userEmail(),
-                event.month())).thenReturn(Optional.of(budget));
+        when(userRepository.findByEmail(event.userEmail())).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), event.month())).thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(createExpenseList(BigDecimal.valueOf(500)));
 
@@ -81,8 +85,9 @@ public class BudgetCalculationServiceTest {
 
     @Test
     void calculateBudget_Should_DoNothing_When_NoBudget() {
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
-                .thenReturn(Optional.empty());
+        UserEntity user = createUser();
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(user));
+        when(budgetRepository.findByUserAndMonth(Optional.of(user), "2025-08")).thenReturn(Optional.empty());
 
         budgetCalculationService.calculateBudgetWhenExpenseIsCreated("test@gmail.com", 1L, "2025-08");
 
@@ -94,7 +99,7 @@ public class BudgetCalculationServiceTest {
     void calculateBudgetWhenBudgetIsCreated_Should_ThrowException_When_BudgetNotFound() {
         when(budgetRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThrows(com.example.expense_tracker.exception.BudgetNotFoundException.class, 
+        assertThrows(com.example.expense_tracker.exception.BudgetNotFoundException.class,
             () -> budgetCalculationService.calculateBudgetWhenBudgetIsCreated(999L));
     }
 
@@ -102,7 +107,7 @@ public class BudgetCalculationServiceTest {
     void calculateBudgetWhenBudgetIsCreated_Should_RecalculateSpent_When_BudgetExists() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
-        
+
         when(budgetRepository.findById(1L)).thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth(anyString(), anyInt(), anyInt()))
                 .thenReturn(List.of());
@@ -116,8 +121,9 @@ public class BudgetCalculationServiceTest {
     void should_Generate_25Percent_Warning_Notification() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
-        
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), "2025-08"))
                 .thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(createExpenseList(BigDecimal.valueOf(750)));
@@ -126,7 +132,7 @@ public class BudgetCalculationServiceTest {
 
         ArgumentCaptor<NotificationEntity> captor = ArgumentCaptor.forClass(NotificationEntity.class);
         verify(notificationRepository, times(1)).save(captor.capture());
-        
+
         NotificationEntity notification = captor.getValue();
         assertEquals("Critical warning! Budget almost depleted", notification.getMessage());
         assertEquals(NotificationTypeEnum.BUDGET_WARNING_25, notification.getType());
@@ -136,8 +142,9 @@ public class BudgetCalculationServiceTest {
     void should_Generate_75Percent_Warning_Notification() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
-        
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), "2025-08"))
                 .thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(createExpenseList(BigDecimal.valueOf(750)));
@@ -146,7 +153,7 @@ public class BudgetCalculationServiceTest {
 
         ArgumentCaptor<NotificationEntity> captor = ArgumentCaptor.forClass(NotificationEntity.class);
         verify(notificationRepository, times(1)).save(captor.capture());
-        
+
         NotificationEntity notification = captor.getValue();
         assertEquals("Critical warning! Budget almost depleted", notification.getMessage());
         assertEquals(NotificationTypeEnum.BUDGET_WARNING_25, notification.getType());
@@ -156,8 +163,9 @@ public class BudgetCalculationServiceTest {
     void should_Generate_Budget_Exceeded_Notification() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
-        
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), "2025-08"))
                 .thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(createExpenseList(BigDecimal.valueOf(1200)));
@@ -166,7 +174,7 @@ public class BudgetCalculationServiceTest {
 
         ArgumentCaptor<NotificationEntity> captor = ArgumentCaptor.forClass(NotificationEntity.class);
         verify(notificationRepository, times(1)).save(captor.capture());
-        
+
         NotificationEntity notification = captor.getValue();
         assertEquals("You've officially overspent", notification.getMessage());
         assertEquals(NotificationTypeEnum.BUDGET_EXCEEDED, notification.getType());
@@ -176,8 +184,9 @@ public class BudgetCalculationServiceTest {
     void should_Not_Generate_Notification_When_Above_75Percent() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
-        
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), "2025-08"))
                 .thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(createExpenseList(BigDecimal.valueOf(200)));
@@ -192,14 +201,15 @@ public class BudgetCalculationServiceTest {
     void should_Convert_Currency_When_Expense_And_Budget_Different_Currencies() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
-        
+
         ExpenseEntity usdExpense = new ExpenseEntity();
         usdExpense.setId(1L);
         usdExpense.setAmount(BigDecimal.valueOf(100));
         usdExpense.setCurrency(createCurrency("USD"));
         usdExpense.setUser(owner);
-        
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), "2025-08"))
                 .thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(List.of(usdExpense));
@@ -215,8 +225,9 @@ public class BudgetCalculationServiceTest {
     void should_Not_Convert_When_Same_Currency() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
-        
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), "2025-08"))
                 .thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(createExpenseList(BigDecimal.valueOf(500)));
@@ -230,14 +241,15 @@ public class BudgetCalculationServiceTest {
     void should_Calculate_Total_From_Multiple_Expenses_In_Month() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
-        
+
         List<ExpenseEntity> multipleExpenses = List.of(
                 createExpense(BigDecimal.valueOf(300), "BGN"),
                 createExpense(BigDecimal.valueOf(250), "BGN"),
                 createExpense(BigDecimal.valueOf(250), "BGN")
         );
-        
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), "2025-08"))
                 .thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(multipleExpenses);
@@ -245,10 +257,10 @@ public class BudgetCalculationServiceTest {
         budgetCalculationService.calculateBudgetWhenExpenseIsCreated("test@gmail.com", 1L, "2025-08");
 
         assertEquals(BigDecimal.valueOf(800), budget.getSpent());
-        
+
         ArgumentCaptor<NotificationEntity> captor = ArgumentCaptor.forClass(NotificationEntity.class);
         verify(notificationRepository, times(1)).save(captor.capture());
-        
+
         NotificationEntity notification = captor.getValue();
         assertEquals("Critical warning! Budget almost depleted", notification.getMessage());
     }
@@ -257,8 +269,9 @@ public class BudgetCalculationServiceTest {
     void should_Handle_Zero_Budget_Limit_And_Generate_Exceeded_Notification() {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.ZERO, owner, "2025-08", BigDecimal.valueOf(0));
-        
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
+
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), "2025-08"))
                 .thenReturn(Optional.of(budget));
         when(expenseRepository.findAllByUserEmailAndYearAndMonth("test@gmail.com", 2025, 8))
                 .thenReturn(createExpenseList(BigDecimal.valueOf(100)));
@@ -267,7 +280,7 @@ public class BudgetCalculationServiceTest {
 
         ArgumentCaptor<NotificationEntity> captor = ArgumentCaptor.forClass(NotificationEntity.class);
         verify(notificationRepository, times(1)).save(captor.capture());
-        
+
         NotificationEntity notification = captor.getValue();
         assertEquals("You've officially overspent", notification.getMessage());
         assertEquals(NotificationTypeEnum.BUDGET_EXCEEDED, notification.getType());
@@ -279,7 +292,7 @@ public class BudgetCalculationServiceTest {
         expense.setAmount(amount);
         expense.setCurrency(createCurrency(currencyCode));
         expense.setUser(createUser());
-        
+
         return expense;
     }
 
@@ -315,7 +328,7 @@ public class BudgetCalculationServiceTest {
         expense.setAmount(totalAmount);
         expense.setCurrency(createCurrency("BGN"));
         expense.setUser(createUser());
-        
+
         return List.of(expense);
     }
 
@@ -323,7 +336,7 @@ public class BudgetCalculationServiceTest {
         CurrencyEntity currency = new CurrencyEntity();
         currency.setId(1L);
         currency.setCode(code);
-        
+
         return currency;
     }
 

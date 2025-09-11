@@ -9,6 +9,7 @@ import com.example.expense_tracker.model.event.ExpenseCreatedEvent;
 import com.example.expense_tracker.repository.BudgetRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
 import com.example.expense_tracker.repository.NotificationRepository;
+import com.example.expense_tracker.repository.UserRepository;
 import com.example.expense_tracker.service.impl.BudgetCalculationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,9 @@ public class BudgetCalculationServiceTest {
     private ExpenseRepository expenseRepository;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
     private ExRateService exRateService;
 
     private BudgetCalculationService budgetCalculationService;
@@ -51,7 +55,7 @@ public class BudgetCalculationServiceTest {
     @BeforeEach
     void setUp() {
         budgetCalculationService = new BudgetCalculationServiceImpl(budgetRepository,
-                expenseRepository, notificationRepository, exRateService);
+                expenseRepository, notificationRepository, userRepository, exRateService);
     }
 
     @Test
@@ -62,8 +66,8 @@ public class BudgetCalculationServiceTest {
         UserEntity owner = createUser();
         BudgetEntity budget = createBudget(BigDecimal.valueOf(1000), owner, "2025-08", BigDecimal.valueOf(0));
 
-        when(budgetRepository.findByUserEmailAndAndMonth(event.userEmail(),
-                event.month())).thenReturn(Optional.of(budget));
+        when(userRepository.findByEmail(event.userEmail())).thenReturn(Optional.of(owner));
+        when(budgetRepository.findByUserAndMonth(Optional.of(owner), event.month())).thenReturn(Optional.of(budget));
 
         // Act
         budgetCalculationService.calculateBudgetWhenExpenseIsCreated(event.userEmail(), event.expenseId(),
@@ -85,8 +89,9 @@ public class BudgetCalculationServiceTest {
     @Test
     void calculateBudget_Should_DoNothing_When_NoBudget() {
         // Arrange - връщаме празен Optional (няма budget)
-        when(budgetRepository.findByUserEmailAndAndMonth("test@gmail.com", "2025-08"))
-                .thenReturn(Optional.empty());
+        UserEntity user = createUser();
+        when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(user));
+        when(budgetRepository.findByUserAndMonth(Optional.of(user), "2025-08")).thenReturn(Optional.empty());
 
         // Act
         budgetCalculationService.calculateBudgetWhenExpenseIsCreated("test@gmail.com", 1L, "2025-08");

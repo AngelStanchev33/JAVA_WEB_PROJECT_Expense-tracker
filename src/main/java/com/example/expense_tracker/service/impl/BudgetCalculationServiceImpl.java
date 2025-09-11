@@ -35,7 +35,15 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
 
     @Override
     public void calculateBudgetWhenExpenseIsCreated(String userEmail, Long expenseId, String month) {
-        Optional<BudgetEntity> optionalEntity = budgetRepository.findByUserEmailAndAndMonth(userEmail, month);
+        Optional<BudgetEntity> optionalEntity;
+        try {
+            optionalEntity = budgetRepository.findByUser(userEmail);
+        } catch (Exception e) {
+            System.out.println("Exception type: " + e.getClass().getSimpleName());
+            System.out.println("Exception message: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
 
         if (optionalEntity.isEmpty()) {
             // Няма budget за този месец - skip логиката

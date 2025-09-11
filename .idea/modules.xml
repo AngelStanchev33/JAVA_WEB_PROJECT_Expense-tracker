@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.example.expense_tracker.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.example.expense_tracker.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/expense_tracker.iml" filepath="$PROJECT_DIR$/.idea/expense_tracker.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/.idea/expense_tracker.iml" filepath="$PROJECT_DIR$/.idea/expense_tracker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/expense_tracker.expense_tracker.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/expense_tracker.expense_tracker.main~1.iml" />
+>>>>>>> 90509b44ac578f6e50cedaa394d69c29a0baa1c3
     </modules>
   </component>
 </project>

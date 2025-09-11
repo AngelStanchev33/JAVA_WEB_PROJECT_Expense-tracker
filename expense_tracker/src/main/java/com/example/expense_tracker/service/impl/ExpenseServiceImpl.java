@@ -41,8 +41,13 @@ public class ExpenseServiceImpl implements ExpenseService {
         ExpenseEntity expenseEntity = modelMapper.map(
                 createExpenseDto, ExpenseEntity.class);
         expenseEntity.setUser(userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email)));
-        expenseEntity.setCategory(categoryRepository.findByCategoryEnum(CategoryEnum.valueOf(createExpenseDto.getCategory()))
-                .orElseThrow(() -> new CategoryNotFoundException(createExpenseDto.getCategory())));
+        try {
+            CategoryEnum categoryEnum = CategoryEnum.valueOf(createExpenseDto.getCategory());
+            expenseEntity.setCategory(categoryRepository.findByCategoryEnum(categoryEnum)
+                    .orElseThrow(() -> new CategoryNotFoundException(createExpenseDto.getCategory())));
+        } catch (IllegalArgumentException e) {
+            throw new CategoryNotFoundException(createExpenseDto.getCategory());
+        }
         expenseEntity.setCurrency(currencyRepository.findByCode(createExpenseDto.getCurrencyCode())
                 .orElseThrow(() -> new CurrencyNotFoundException(createExpenseDto.getCurrencyCode())));
 
