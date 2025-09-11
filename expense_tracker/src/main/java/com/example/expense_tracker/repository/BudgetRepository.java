@@ -1,7 +1,6 @@
 package com.example.expense_tracker.repository;
 
 import com.example.expense_tracker.model.entity.BudgetEntity;
-import com.example.expense_tracker.model.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +12,7 @@ public interface BudgetRepository extends JpaRepository<BudgetEntity, Long> {
 
     List<BudgetEntity> findByUserEmail(String email);
 
-    Optional<BudgetEntity> findByUserAndMonth(Optional<UserEntity> user, String month);
+    Optional<BudgetEntity> findByUser_EmailAndMonth(String mail, String month);
 
     Optional<BudgetEntity> findByIdAndUserEmail(Long budgetId, String email);
 }

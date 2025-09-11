@@ -4,7 +4,6 @@ import com.example.expense_tracker.exception.BudgetNotFoundException;
 import com.example.expense_tracker.model.entity.BudgetEntity;
 import com.example.expense_tracker.model.entity.ExpenseEntity;
 import com.example.expense_tracker.model.entity.NotificationEntity;
-import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.model.enums.NotificationTypeEnum;
 import com.example.expense_tracker.repository.BudgetRepository;
 import com.example.expense_tracker.repository.ExpenseRepository;
@@ -28,26 +27,17 @@ public class BudgetCalculationServiceImpl implements BudgetCalculationService {
     private final NotificationRepository notificationRepository;
     private final ExRateService exRateService;
 
-    private final UserRepository userRepository;
-
-    public BudgetCalculationServiceImpl(BudgetRepository budgetRepository, ExpenseRepository expenseRepository, NotificationRepository notificationRepository, ExRateService exRateService, UserRepository userRepository) {
+    public BudgetCalculationServiceImpl(BudgetRepository budgetRepository, ExpenseRepository expenseRepository, NotificationRepository notificationRepository, ExRateService exRateService) {
         this.budgetRepository = budgetRepository;
         this.expenseRepository = expenseRepository;
         this.notificationRepository = notificationRepository;
         this.exRateService = exRateService;
-        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
     public void calculateBudgetWhenExpenseIsCreated(String userEmail, Long expenseId, String month) {
-        Optional<UserEntity> user = userRepository.findByEmail(userEmail);
-
-        if (user.isEmpty()) {
-            return;
-        }
-
-        Optional<BudgetEntity> optionalEntity = budgetRepository.findByUserAndMonth(user, month);
+        Optional<BudgetEntity> optionalEntity = budgetRepository.findByUser_EmailAndMonth(userEmail, month);
 
         if (optionalEntity.isEmpty()) {
             return;
