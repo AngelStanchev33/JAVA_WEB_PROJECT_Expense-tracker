@@ -81,17 +81,3 @@ Spring Boot • JWT • MySQL • Docker • Event-Driven Architecture
 
 Built for learning modern Spring Boot development.
 
-## Environment Variables
-
-Required (no defaults committed):
-
-- `JWT_SIGNING_KEY` — HMAC secret for JWT
-- `FOREX_API_KEY` — key for OpenExchangeRates
-- `MYSQL_USER`, `MYSQL_PASSWORD` — DB credentials
-
-Optional/dev:
-
-- `SPRING_PROFILES_ACTIVE=dev` — enables DEBUG and SQL logging (via env)
-- `DATABASE_HOST` — defaults to `localhost`; set to `db` in Docker
-
-Tip: create a local `.env` for your shell. Do not commit secrets. See `.env.example`.
