@@ -4,7 +4,41 @@ Spring Boot expense tracking with JWT authentication and smart budget notificati
 
 ## Quick Start
 
-Option A — Local (dev):
+Run with Docker (recommended for demo):
+
+1) Clone and enter the repo
+
+```bash
+git clone https://github.com/AngelStanchev33/JAVA_WEB_PROJECT_Expense-tracker.git
+cd JAVA_WEB_PROJECT_Expense-tracker
+```
+
+2) Build the JAR (required before Docker)
+
+- Windows PowerShell
+```powershell
+./gradlew.bat clean build
+```
+
+- Linux/macOS
+```bash
+./gradlew clean build
+```
+
+3) Start containers from the project root (where `docker-compose.yml` is)
+
+```bash
+docker compose up --build
+```
+
+Access: API at `http://localhost:8080` • Swagger at `/swagger-ui/index.html`
+
+Notes:
+- The app runs with `SPRING_PROFILES_ACTIVE=dev` (extra Spring Security DEBUG logs only).
+- The DB connection auto-targets Docker DB (`DATABASE_HOST=db` via compose). Running outside Docker uses `localhost` by default.
+- If you see an error about missing `build/libs/*.jar`, run the Gradle build step and re-run `docker compose up --build`.
+
+Run locally without Docker (optional):
 
 ```powershell
 # Windows PowerShell
@@ -15,15 +49,6 @@ $env:MYSQL_USER="root"
 $env:MYSQL_PASSWORD="12345"
 ./gradlew.bat bootRun
 ```
-
-Option B — Docker Compose:
-
-```bash
-./gradlew clean build
-docker compose up --build
-```
-
-API: `http://localhost:8080` • Swagger: `/swagger-ui/index.html`
 
 ## Features
 
@@ -48,22 +73,6 @@ GET  /budgets/my        # Your budgets
 POST /budgets/create    # Create budget
 
 GET  /notifications/my  # Budget alerts
-```
-
-## Example Usage
-
-```bash
-# Register
-curl -X POST http://localhost:8080/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"password123","firstName":"Test","lastName":"User"}'
-
-# Login
-curl -X POST http://localhost:8080/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"password123"}'
-
-# Create budget in EUR, add expense in BGN - auto-converts!
 ```
 
 ## Tech Stack
