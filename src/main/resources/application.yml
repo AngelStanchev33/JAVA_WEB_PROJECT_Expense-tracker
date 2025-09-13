@@ -1,10 +1,10 @@
 jwt:
-  signing-key: ${JWT_SIGNING_KEY:mySecretKey123456789012345678901234567890}
+  signing-key: ${JWT_SIGNING_KEY}
   expiration: ${JWT_EXPIRATION:86400000}
 
 forex:
   api:
-    key: ${FOREX_API_KEY:c92e55f7de3d4bb8bbd3d22241bb1755}
+    key: ${FOREX_API_KEY}
     url: "https://openexchangerates.org/api/latest.json?app_id={app_id}&symbols=EUR,BGN"
     base: "USD"
 
@@ -12,8 +12,8 @@ mail:
   expenseTracker: "expensetracker@example.com"
   host: localhost
   port: 1025
-  username: ${MAIL_USERNAME:test}
-  password: ${MAIL_PASSWORD:test}
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
 
 spring:
   application:
@@ -27,14 +27,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+    properties: {}
   datasource:
-    url: jdbc:mysql://localhost:3306/expense_tracker?createDatabaseIfNotExist=true
-    username: ${MYSQL_USER:root}
-    password: ${MYSQL_PASSWORD:12345}
+    url: jdbc:mysql://${DATABASE_HOST:localhost}:3306/expense_tracker?createDatabaseIfNotExist=true
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
   security:
     oauth2:
       client:
@@ -46,11 +43,3 @@ spring:
 
 server:
   port: 8080
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.springframework.security.authentication: DEBUG
-    com.example.expense_tracker: DEBUG
-    com.example.expense_tracker.service.impl.BudgetServiceImpl: DEBUG

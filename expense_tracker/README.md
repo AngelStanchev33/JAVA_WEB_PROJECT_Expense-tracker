@@ -4,13 +4,26 @@ Spring Boot expense tracking with JWT authentication and smart budget notificati
 
 ## Quick Start
 
-```bash
-git clone https://github.com/AngelStanchev33/JAVA_WEB_PROJECT_Expense-tracker.git
-cd JAVA_WEB_PROJECT_Expense-tracker
-docker compose up
+Option A — Local (dev):
+
+```powershell
+# Windows PowerShell
+$env:SPRING_PROFILES_ACTIVE="dev"
+$env:JWT_SIGNING_KEY="dev-secret-change-me"
+$env:FOREX_API_KEY="dev-forex-key"
+$env:MYSQL_USER="root"
+$env:MYSQL_PASSWORD="12345"
+./gradlew.bat bootRun
 ```
 
-API: `http://localhost:8080`
+Option B — Docker Compose:
+
+```bash
+./gradlew clean build
+docker compose up --build
+```
+
+API: `http://localhost:8080` • Swagger: `/swagger-ui/index.html`
 
 ## Features
 
@@ -58,3 +71,18 @@ curl -X POST http://localhost:8080/auth/login \
 Spring Boot • JWT • MySQL • Docker • Event-Driven Architecture
 
 Built for learning modern Spring Boot development.
+
+## Environment Variables
+
+Required (no defaults committed):
+
+- `JWT_SIGNING_KEY` — HMAC secret for JWT
+- `FOREX_API_KEY` — key for OpenExchangeRates
+- `MYSQL_USER`, `MYSQL_PASSWORD` — DB credentials
+
+Optional/dev:
+
+- `SPRING_PROFILES_ACTIVE=dev` — enables DEBUG and SQL logging (via env)
+- `DATABASE_HOST` — defaults to `localhost`; set to `db` in Docker
+
+Tip: create a local `.env` for your shell. Do not commit secrets. See `.env.example`.
