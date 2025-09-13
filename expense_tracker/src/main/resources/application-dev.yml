@@ -1,5 +1,5 @@
 jwt:
-  signing-key: dev-secret-change-me
+  signing-key: dev-secret-change-me-32-bytes-min-123456
   expiration: 86400000
 
 forex:
@@ -24,4 +24,3 @@ logging:
     org.springframework.security.authentication: DEBUG
     com.example.expense_tracker: DEBUG
     com.example.expense_tracker.service.impl.BudgetServiceImpl: DEBUG
-
