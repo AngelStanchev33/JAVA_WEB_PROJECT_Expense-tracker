@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 public class BudgetAlarmListener {
@@ -19,7 +18,6 @@ public class BudgetAlarmListener {
         this.budgetCalculationService = budgetCalculationService;
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @EventListener
     public void calculateBudget(ExpenseCreatedEvent event) {
         budgetCalculationService.calculateBudgetWhenExpenseIsCreated(
@@ -28,7 +26,6 @@ public class BudgetAlarmListener {
                 event.month());
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @EventListener
     public void calculateBudget(BudgetCreatedEvent event) {
         budgetCalculationService.calculateBudgetWhenBudgetIsCreated(event.budgetID());
