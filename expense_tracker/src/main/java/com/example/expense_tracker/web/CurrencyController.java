@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/currencies")
+@RequestMapping("/api/currencies")
 public class CurrencyController {
 
     private final ExRateService exRateService;

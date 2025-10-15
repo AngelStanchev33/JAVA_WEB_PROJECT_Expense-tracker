@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
+@RequestMapping("/api")
 public class LoginController {
 
     private final AuthenticationManager authenticationManager;
@@ -34,7 +35,7 @@ public class LoginController {
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
         ExpenseTrackerUserDetails user = (ExpenseTrackerUserDetails) authenticate.getPrincipal();
-
+        
         List<String> roles = user.getAuthorities().stream().map(Objects::toString).toList();
 
         Map<String, Object> claims = Map.of("roles", roles);

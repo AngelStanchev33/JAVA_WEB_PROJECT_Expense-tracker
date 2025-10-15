@@ -8,7 +8,6 @@ import java.util.List;
 public interface ExRateService {
     
     List<String> allSupportedCurrencies();
-
     
     ExRatesDTO fetchExRates();
     
