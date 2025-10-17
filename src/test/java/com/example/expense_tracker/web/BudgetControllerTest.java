@@ -70,7 +70,7 @@ public class BudgetControllerTest {
                 new BigDecimal("1000.00"),
                 "BGN");
 
-        mockMvc.perform(delete("/budgets/{id}", budget.getId())
+        mockMvc.perform(delete("/api/budgets/{id}", budget.getId())
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }
@@ -84,7 +84,7 @@ public class BudgetControllerTest {
                 new BigDecimal("1000.00"),
                 "EUR");
 
-        mockMvc.perform(delete("/budgets/{id}", budget.getId())
+        mockMvc.perform(delete("/api/budgets/{id}", budget.getId())
                         .with(csrf()))
                 .andExpect(status().isOk());
     }
@@ -97,7 +97,7 @@ public class BudgetControllerTest {
                 new BigDecimal("150.00"),
                 new BigDecimal("1000.00"),
                 "BGN");
-        mockMvc.perform(delete("/budgets/{id}", budget.getId())
+        mockMvc.perform(delete("/api/budgets/{id}", budget.getId())
                         .with(csrf()))
                 .andExpect(status().isForbidden());
     }
@@ -106,7 +106,7 @@ public class BudgetControllerTest {
     void test_AnonymousCreate_Returns_Unauthorized() throws Exception {
         CreateBudgetDto budgetDto = createValidBudgetDto();
 
-        mockMvc.perform(post("/budgets/create")
+        mockMvc.perform(post("/api/budgets/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(budgetDto))
                         .with(csrf()))
@@ -119,7 +119,7 @@ public class BudgetControllerTest {
         userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         CreateBudgetDto budgetDto = createValidBudgetDto();
 
-        mockMvc.perform(post("/budgets/create")
+        mockMvc.perform(post("/api/budgets/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(budgetDto))
                         .with(csrf()))
@@ -135,7 +135,7 @@ public class BudgetControllerTest {
         userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         CreateBudgetDto invalidDto = new CreateBudgetDto()
                 .setMonth("")                 .setBudgetLimit(new BigDecimal("-10")); 
-        mockMvc.perform(post("/budgets/create")
+        mockMvc.perform(post("/api/budgets/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto))
                         .with(csrf()))
@@ -144,7 +144,7 @@ public class BudgetControllerTest {
 
     @Test
     void test_AnonymousGetMyBudgets_Returns_Unauthorized() throws Exception {
-        mockMvc.perform(get("/budgets/my"))
+        mockMvc.perform(get("/api/budgets/my"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -157,7 +157,7 @@ public class BudgetControllerTest {
         testDataUtil.createBudget(user, "2024-09", new BigDecimal("200.00"),
                 new BigDecimal("1200.00"), "BGN");
 
-        mockMvc.perform(get("/budgets/my"))
+        mockMvc.perform(get("/api/budgets/my"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -175,7 +175,7 @@ public class BudgetControllerTest {
         testDataUtil.createBudget(user2, "2024-08", new BigDecimal("200.00"),
                 new BigDecimal("1200.00"),
                 "BGN"); 
-        mockMvc.perform(get("/budgets/my"))
+        mockMvc.perform(get("/api/budgets/my"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));     }
@@ -188,7 +188,7 @@ public class BudgetControllerTest {
                 new BigDecimal("1000.00"),
                 "BGN");
 
-        mockMvc.perform(get("/budgets/{id}", budget.getId()))
+        mockMvc.perform(get("/api/budgets/{id}", budget.getId()))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -201,7 +201,7 @@ public class BudgetControllerTest {
                 new BigDecimal("1000.00"),
                 "BGN");
 
-        mockMvc.perform(get("/budgets/{id}", budget.getId()))
+        mockMvc.perform(get("/api/budgets/{id}", budget.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(budget.getId()))
                 .andExpect(jsonPath("$.month").value("2024-08"))
@@ -219,7 +219,7 @@ public class BudgetControllerTest {
                 new BigDecimal("1000.00"),
                 "BGN");
 
-        mockMvc.perform(get("/budgets/{id}", budget.getId()))
+        mockMvc.perform(get("/api/budgets/{id}", budget.getId()))
                 .andExpect(status().isForbidden());
     }
 
@@ -229,7 +229,7 @@ public class BudgetControllerTest {
         userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         Long nonExistentId = 99999L;
 
-        mockMvc.perform(get("/budgets/{id}", nonExistentId))
+        mockMvc.perform(get("/api/budgets/{id}", nonExistentId))
                 .andExpect(status().isForbidden());
     }
 
@@ -242,7 +242,7 @@ public class BudgetControllerTest {
                 "BGN");
         UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
 
-        mockMvc.perform(put("/budgets/{id}", budget.getId())
+        mockMvc.perform(put("/api/budgets/{id}", budget.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -259,7 +259,7 @@ public class BudgetControllerTest {
                 "BGN");
         UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
 
-        mockMvc.perform(put("/budgets/{id}", budget.getId())
+        mockMvc.perform(put("/api/budgets/{id}", budget.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -279,7 +279,7 @@ public class BudgetControllerTest {
                 "BGN");
         UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
 
-        mockMvc.perform(put("/budgets/{id}", budget.getId())
+        mockMvc.perform(put("/api/budgets/{id}", budget.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -293,7 +293,7 @@ public class BudgetControllerTest {
         UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
         Long nonExistentId = 99999L;
 
-        mockMvc.perform(put("/budgets/{id}", nonExistentId)
+        mockMvc.perform(put("/api/budgets/{id}", nonExistentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -311,7 +311,7 @@ public class BudgetControllerTest {
         
         UpdateBudgetDto invalidDto = new UpdateBudgetDto()
                 .setMonth("")                 .setBudgetLimit(new BigDecimal("-100.00")); 
-        mockMvc.perform(put("/budgets/{id}", budget.getId())
+        mockMvc.perform(put("/api/budgets/{id}", budget.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto))
                         .with(csrf()))
@@ -341,7 +341,7 @@ public class BudgetControllerTest {
                 new BigDecimal("1000.00"),
                 "BGN");
 
-        mockMvc.perform(delete("/budgets/{id}", budget.getId())
+        mockMvc.perform(delete("/api/budgets/{id}", budget.getId())
                         .with(csrf()))
                 .andExpect(status().isOk());
     }
@@ -356,7 +356,7 @@ public class BudgetControllerTest {
                 "BGN");
         UpdateBudgetDto updateDto = createValidUpdateBudgetDto();
 
-        mockMvc.perform(put("/budgets/{id}", budget.getId())
+        mockMvc.perform(put("/api/budgets/{id}", budget.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -373,7 +373,7 @@ public class BudgetControllerTest {
                 new BigDecimal("1000.00"),
                 "BGN");
 
-        mockMvc.perform(get("/budgets/{id}", budget.getId()))
+        mockMvc.perform(get("/api/budgets/{id}", budget.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(budget.getId()));
     }
@@ -387,7 +387,7 @@ public class BudgetControllerTest {
                 new BigDecimal("1000.00"),
                 "BGN");
 
-        mockMvc.perform(delete("/budgets/{id}", budget.getId())
+        mockMvc.perform(delete("/api/budgets/{id}", budget.getId())
                         .with(csrf()))
                 .andExpect(status().isForbidden());
     }

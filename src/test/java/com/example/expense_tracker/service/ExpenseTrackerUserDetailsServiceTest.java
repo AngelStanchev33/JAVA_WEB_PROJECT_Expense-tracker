@@ -55,7 +55,7 @@ public class ExpenseTrackerUserDetailsServiceTest {
                 userRole, adminRole
         ));
 
-        when(mockUserRepository.findByEmail(TEST_EMAIL)).thenReturn(Optional.of(testUser));
+        when(mockUserRepository.findByEmailWithUserRoles(TEST_EMAIL)).thenReturn(Optional.of(testUser));
 
         UserDetails userDetails = testUserService.loadUserByUsername(TEST_EMAIL);
 
@@ -85,7 +85,7 @@ public class ExpenseTrackerUserDetailsServiceTest {
 
     @Test
     void test_LoadUserByUsername_UserNotFound() {
-        when(mockUserRepository.findByEmail(NOT_EXISTENT_EMAIL)).thenReturn(Optional.empty());
+        when(mockUserRepository.findByEmailWithUserRoles(NOT_EXISTENT_EMAIL)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(UsernameNotFoundException.class, () -> {
             testUserService.loadUserByUsername(NOT_EXISTENT_EMAIL);

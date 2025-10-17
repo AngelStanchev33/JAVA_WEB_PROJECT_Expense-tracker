@@ -54,7 +54,7 @@ public class LoginControllerTest {
                 = new HttpEntity<>(request, headers);
 
         ResponseEntity<AuthResponseDto> response = restTemplate.exchange(
-                "/login",
+                "/api/login",
                 HttpMethod.POST,
                 requestDtoHttpEntity,
                 AuthResponseDto.class
@@ -76,7 +76,7 @@ public class LoginControllerTest {
         HttpEntity<AuthRequestDto> requestDtoHttpEntity = new HttpEntity<>(request, headers);
 
         ResponseEntity<AuthResponseDto> response = restTemplate.exchange(
-                "/login",
+                "/api/login",
                 HttpMethod.POST,
                 requestDtoHttpEntity,
                 AuthResponseDto.class

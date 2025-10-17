@@ -103,7 +103,7 @@ public class RegistrationControllerTest {
     @Rollback
     void test_Registration() throws Exception {
 
-        mockMvc.perform(post("/register")
+        mockMvc.perform(post("/api/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

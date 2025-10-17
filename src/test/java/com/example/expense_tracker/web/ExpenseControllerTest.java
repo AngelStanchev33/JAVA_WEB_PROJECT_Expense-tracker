@@ -66,7 +66,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, ADMIN_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.BILLS, "BGN");
 
-        mockMvc.perform(delete("/expenses/{id}", expense.getId())
+        mockMvc.perform(delete("/api/expenses/{id}", expense.getId())
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
 
@@ -78,7 +78,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.BILLS, "BGN");
 
-        mockMvc.perform(delete("/expenses/{id}", expense.getId())
+        mockMvc.perform(delete("/api/expenses/{id}", expense.getId())
                         .with(csrf()))
                 .andExpect(status().isOk());
     }
@@ -89,7 +89,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, ADMIN_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.BILLS, "BGN");
 
-        mockMvc.perform(delete("/expenses/{id}", expense.getId())
+        mockMvc.perform(delete("/api/expenses/{id}", expense.getId())
                         .with(csrf()))
                 .andExpect(status().isForbidden());
     }
@@ -98,7 +98,7 @@ public class ExpenseControllerTest {
     void test_AnonymousCreate_Returns_Unauthorized() throws Exception {
         CreateExpenseDto createDto = createValidExpenseDto();
 
-        mockMvc.perform(post("/expenses/create")
+        mockMvc.perform(post("/api/expenses/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDto))
                         .with(csrf()))
@@ -111,7 +111,7 @@ public class ExpenseControllerTest {
         userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         CreateExpenseDto createDto = createValidExpenseDto();
 
-        mockMvc.perform(post("/expenses/create")
+        mockMvc.perform(post("/api/expenses/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDto))
                         .with(csrf()))
@@ -131,7 +131,7 @@ public class ExpenseControllerTest {
                 .setCategory("INVALID_CATEGORY")
                 .setExpenseDate(LocalDate.now().minusDays(1));
 
-        mockMvc.perform(post("/expenses/create")
+        mockMvc.perform(post("/api/expenses/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto))
                         .with(csrf()))
@@ -140,7 +140,7 @@ public class ExpenseControllerTest {
 
     @Test
     void test_AnonymousGetMyExpenses_Returns_Unauthorized() throws Exception {
-        mockMvc.perform(get("/expenses/my"))
+        mockMvc.perform(get("/api/expenses/my"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -151,7 +151,7 @@ public class ExpenseControllerTest {
         testDataUtil.createExpense(user, CategoryEnum.FOOD, "BGN");
         testDataUtil.createExpense(user, CategoryEnum.BILLS, "BGN");
 
-        mockMvc.perform(get("/expenses/my"))
+        mockMvc.perform(get("/api/expenses/my"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -167,7 +167,7 @@ public class ExpenseControllerTest {
         testDataUtil.createExpense(user1, CategoryEnum.FOOD, "BGN");
         testDataUtil.createExpense(user2, CategoryEnum.BILLS, "BGN");
 
-        mockMvc.perform(get("/expenses/my"))
+        mockMvc.perform(get("/api/expenses/my"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));
@@ -178,7 +178,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.FOOD, "BGN");
 
-        mockMvc.perform(get("/expenses/{id}", expense.getId()))
+        mockMvc.perform(get("/api/expenses/{id}", expense.getId()))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -188,7 +188,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.FOOD, "BGN");
 
-        mockMvc.perform(get("/expenses/{id}", expense.getId()))
+        mockMvc.perform(get("/api/expenses/{id}", expense.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(expense.getId()))
                 .andExpect(jsonPath("$.description").value("test"))
@@ -204,7 +204,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.FOOD, "BGN");
 
-        mockMvc.perform(get("/expenses/{id}", expense.getId()))
+        mockMvc.perform(get("/api/expenses/{id}", expense.getId()))
                 .andExpect(status().isForbidden());
     }
 
@@ -214,7 +214,7 @@ public class ExpenseControllerTest {
         userTestDataUtil.createUser("test@test.bg", USER_ROLES);
         Long nonExistentId = 99999L;
 
-        mockMvc.perform(get("/expenses/{id}", nonExistentId))
+        mockMvc.perform(get("/api/expenses/{id}", nonExistentId))
                 .andExpect(status().isForbidden());
     }
 
@@ -224,7 +224,7 @@ public class ExpenseControllerTest {
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.FOOD, "BGN");
         UpdateExpenseDto updateDto = createValidUpdateExpenseDto();
 
-        mockMvc.perform(put("/expenses/{id}", expense.getId())
+        mockMvc.perform(put("/api/expenses/{id}", expense.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -238,7 +238,7 @@ public class ExpenseControllerTest {
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.FOOD, "BGN");
         UpdateExpenseDto updateDto = createValidUpdateExpenseDto();
 
-        mockMvc.perform(put("/expenses/{id}", expense.getId())
+        mockMvc.perform(put("/api/expenses/{id}", expense.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -256,7 +256,7 @@ public class ExpenseControllerTest {
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.FOOD, "BGN");
         UpdateExpenseDto updateDto = createValidUpdateExpenseDto();
 
-        mockMvc.perform(put("/expenses/{id}", expense.getId())
+        mockMvc.perform(put("/api/expenses/{id}", expense.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -273,7 +273,7 @@ public class ExpenseControllerTest {
                 .setAmount(new BigDecimal("-10.00"))
                 .setCategory("INVALID_CATEGORY");
 
-        mockMvc.perform(put("/expenses/{id}", expense.getId())
+        mockMvc.perform(put("/api/expenses/{id}", expense.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto))
                         .with(csrf()))
@@ -304,7 +304,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.BILLS, "BGN");
 
-        mockMvc.perform(delete("/expenses/{id}", expense.getId())
+        mockMvc.perform(delete("/api/expenses/{id}", expense.getId())
                         .with(csrf()))
                 .andExpect(status().isOk());
     }
@@ -316,7 +316,7 @@ public class ExpenseControllerTest {
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.FOOD, "BGN");
         UpdateExpenseDto updateDto = createValidUpdateExpenseDto();
 
-        mockMvc.perform(put("/expenses/{id}", expense.getId())
+        mockMvc.perform(put("/api/expenses/{id}", expense.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto))
                         .with(csrf()))
@@ -330,7 +330,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.FOOD, "BGN");
 
-        mockMvc.perform(get("/expenses/{id}", expense.getId()))
+        mockMvc.perform(get("/api/expenses/{id}", expense.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(expense.getId()));
     }
@@ -341,7 +341,7 @@ public class ExpenseControllerTest {
         UserEntity owner = userTestDataUtil.createUser(TEST_USER1_EMAIL, USER_ROLES);
         ExpenseEntity expense = testDataUtil.createExpense(owner, CategoryEnum.BILLS, "BGN");
 
-        mockMvc.perform(delete("/expenses/{id}", expense.getId())
+        mockMvc.perform(delete("/api/expenses/{id}", expense.getId())
                         .with(csrf()))
                 .andExpect(status().isForbidden());
     }

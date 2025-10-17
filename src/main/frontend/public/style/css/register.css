@@ -1,0 +1,82 @@
+/* register.css */
+
+body.register-page {
+  font-family: 'Poppins', sans-serif;
+  overflow-y: auto;
+}
+
+body.register-page main {
+  position: relative;
+  z-index: 2;
+  padding: 24px 12px;
+}
+
+body.register-page .register-card {
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, .06);
+  box-shadow: 0 10px 50px rgba(0, 0, 0, .55), 0 0 0 1px var(--mint-25) inset;
+  backdrop-filter: blur(8px);
+  border-radius: 18px;
+  padding: 32px 28px;
+  display: grid;
+  gap: 16px;
+}
+
+body.register-page .register-card h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+body.register-page .register-card .lead {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+body.register-page .register-card form {
+  display: grid;
+  gap: 16px;
+}
+
+body.register-page .register-card .row.g-3 {
+  margin: 0;
+}
+
+body.register-page .register-card .col-md-6 {
+  display: grid;
+  gap: 6px;
+}
+
+body.register-page .form-text {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted) !important;
+}
+
+body.register-page .btn-primary {
+  margin-top: 4px;
+  padding: 14px 16px !important;
+  border-radius: 12px !important;
+  letter-spacing: 1px;
+}
+
+body.register-page .alt {
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  body.register-page .register-card {
+    padding: 28px 20px;
+    gap: 14px;
+  }
+
+  body.register-page .register-card form {
+    gap: 14px;
+  }
+
+  body.register-page .register-card .col-md-6 {
+    gap: 8px;
+  }
+}
