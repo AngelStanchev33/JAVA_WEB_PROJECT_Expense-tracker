@@ -1,0 +1,8 @@
+/* styles.css - Main stylesheet that imports all component styles */
+
+/* Bootstrap 5 */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Custom styles */
+@import url('home.css');
+@import url('login.css');

@@ -1,0 +1,15 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+       http://www.liquibase.org/xml/ns/dbchangelog
+       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="v1.0-019" author="Angel">
+        <comment>Update amount column scale from 4 to 2 decimal places</comment>
+        
+        <modifyDataType tableName="expenses" 
+                        columnName="amount" 
+                        newDataType="DECIMAL(19,2)"/>
+    </changeSet>
+</databaseChangeLog>
