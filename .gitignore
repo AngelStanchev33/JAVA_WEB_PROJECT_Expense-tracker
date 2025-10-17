@@ -37,6 +37,7 @@ out/
 .vscode/
 
 ### Claude Code ###
+.claude/
 CLAUDE.md
 
 ### Frontend ###
