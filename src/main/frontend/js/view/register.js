@@ -91,6 +91,7 @@ export function showRegister(ctx) {
                                         minlength="8"
                                         autocomplete="new-password"
                                     />
+                                    <small class="form-text text-muted">Must match password.</small>
                                 </div>
                             </div>
 
