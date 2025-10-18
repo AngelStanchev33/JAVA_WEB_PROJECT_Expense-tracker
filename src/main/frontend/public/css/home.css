@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    overflow: hidden;
+}
+
+body {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#intro {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    backdrop-filter: brightness(1.05);
+}
+
+.logo img {
+    width: 60px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 3.5rem;
+    letter-spacing: 3px;
+    margin: 0;
+}
+
+h1 .brand {
+    color: #00ffc8;
+    font-weight: 700;
+}
+
+h1 .highlight {
+    color: #ffffff;
+    font-weight: 300;
+}
+
+p {
+    max-width: 600px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 30px auto;
+    opacity: 0.9;
+}
+
+.next-btn {
+    background-color: #00ffc8;
+    color: #000;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.next-btn:hover {
+    background-color: transparent;
+    border: 2px solid #00ffc8;
+    color: #00ffc8;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.6);
+}
+
+/* Responsive Design - Mobile First Adaptations */
+
+/* Tablets (≤992px) */
+@media (max-width: 992px) {
+    h1 {
+        font-size: 3rem;
+        letter-spacing: 2px;
+    }
+
+    .logo img {
+        width: 55px;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+}
+
+/* Mobile (≤768px) */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+        letter-spacing: 1.5px;
+    }
+
+    .logo img {
+        width: 50px;
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    .next-btn {
+        padding: 10px 28px;
+        font-size: 1rem;
+    }
+}
+
+/* Small Mobile (≤576px) */
+@media (max-width: 576px) {
+    h1 {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+
+    .logo img {
+        width: 45px;
+        margin-bottom: 12px;
+    }
+
+    p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 15px auto;
+    }
+
+    .next-btn {
+        padding: 10px 24px;
+        font-size: 0.95rem;
+    }
+
+    #intro {
+        padding: 20px 10px;
+    }
+}
