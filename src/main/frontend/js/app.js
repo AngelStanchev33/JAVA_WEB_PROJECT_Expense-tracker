@@ -6,6 +6,12 @@ import {showRegister} from "./view/register.js";
 
 const root = document.querySelector("main");
 
+// Set global unauthorized handler
+window.onUnauthorized = () => {
+    console.warn("User session expired, redirecting to login");
+    page.redirect("/login");
+};
+
 function decorateContent(ctx, next) {
     if (!root) {
         console.error("Main element not found!");

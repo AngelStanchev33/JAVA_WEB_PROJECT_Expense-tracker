@@ -93,7 +93,7 @@ export function showLogin(ctx) {
 
             try {
                 const token = await login(username, password);
-                page.redirect("/");
+                ctx.page.redirect("/");
             } catch (error) {
                 // Show error message
                 if (errorMessage) {
