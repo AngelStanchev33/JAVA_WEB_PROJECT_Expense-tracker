@@ -1,10 +1,11 @@
 import {html} from "lit-html";
 import page from "page";
+import "../../public/css/home.css";
 
 export function showHome(ctx) {
     // Set background image and remove blur
     document.body.style.backgroundImage = "url('/img/Expensio.png')";
-    document.body.className = '';  // Remove any classes that add blur
+    document.body.className = 'home-page';
 
     ctx.render(html`
         <section id="intro" class="container-fluid">
@@ -26,7 +27,7 @@ export function showHome(ctx) {
 
 
     document.getElementById("next-btn").addEventListener("click", () =>{
-        page.redirect("/login")
+        page("/login")
     })
 }
 

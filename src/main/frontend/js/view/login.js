@@ -1,6 +1,7 @@
 import {html} from "lit-html";
 import page from "page";
 import {login} from "../services/auth.js";
+import "../../public/css/login.css";
 
 export function showLogin(ctx) {
     // Set background image and add blur class
@@ -64,7 +65,7 @@ export function showLogin(ctx) {
     if (signupLink) {
         signupLink.addEventListener("click", (e) => {
             e.preventDefault();
-            page.redirect("/register");
+            page("/register");
         });
     }
 
@@ -93,7 +94,7 @@ export function showLogin(ctx) {
 
             try {
                 const token = await login(username, password);
-                ctx.page.redirect("/");
+                page("/");
             } catch (error) {
                 // Show error message
                 if (errorMessage) {

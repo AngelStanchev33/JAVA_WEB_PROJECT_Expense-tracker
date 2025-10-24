@@ -1,16 +1,11 @@
 import page from "page";
 import {render} from "lit-html";
-import {showHome} from "./view/home.js";
+import {showDashboard} from "./view/dashboard.js";
 import {showLogin} from "./view/login.js";
 import {showRegister} from "./view/register.js";
+import {isAuthenticated} from "./services/auth.js";
 
 const root = document.querySelector("main");
-
-// Set global unauthorized handler
-window.onUnauthorized = () => {
-    console.warn("User session expired, redirecting to login");
-    page.redirect("/login");
-};
 
 function decorateContent(ctx, next) {
     if (!root) {
@@ -21,8 +16,16 @@ function decorateContent(ctx, next) {
     next();
 }
 
+function requireAuth(ctx, next) {
+    if (isAuthenticated()) {
+        next();
+    } else {
+        page("/login");
+    }
+}
+
 page(decorateContent)
-page("/", showHome);
+page("/", requireAuth, showDashboard);
 page("/login", showLogin);
 page("/register", showRegister);
 page.start();

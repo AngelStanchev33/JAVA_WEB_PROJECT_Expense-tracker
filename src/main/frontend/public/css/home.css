@@ -1,21 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
 
-html, body {
+body.home-page {
     height: 100%;
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
     color: white;
     overflow: hidden;
-}
-
-body {
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
 }
 
-#intro {
+.home-page #intro {
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -25,28 +22,28 @@ body {
     backdrop-filter: brightness(1.05);
 }
 
-.logo img {
+.home-page .logo img {
     width: 60px;
     margin-bottom: 20px;
 }
 
-h1 {
+.home-page h1 {
     font-size: 3.5rem;
     letter-spacing: 3px;
     margin: 0;
 }
 
-h1 .brand {
+.home-page h1 .brand {
     color: #00ffc8;
     font-weight: 700;
 }
 
-h1 .highlight {
+.home-page h1 .highlight {
     color: #ffffff;
     font-weight: 300;
 }
 
-p {
+.home-page p {
     max-width: 600px;
     font-size: 1.1rem;
     line-height: 1.8;
@@ -54,7 +51,7 @@ p {
     opacity: 0.9;
 }
 
-.next-btn {
+.home-page .next-btn {
     background-color: #00ffc8;
     color: #000;
     border: none;
@@ -68,7 +65,7 @@ p {
     margin-top: 10px;
 }
 
-.next-btn:hover {
+.home-page .next-btn:hover {
     background-color: transparent;
     border: 2px solid #00ffc8;
     color: #00ffc8;
@@ -80,40 +77,40 @@ p {
 
 /* Tablets (≤992px) */
 @media (max-width: 992px) {
-    h1 {
+    .home-page h1 {
         font-size: 3rem;
         letter-spacing: 2px;
     }
 
-    .logo img {
+    .home-page .logo img {
         width: 55px;
     }
 
-    p {
+    .home-page p {
         font-size: 1rem;
     }
 }
 
 /* Mobile (≤768px) */
 @media (max-width: 768px) {
-    h1 {
+    .home-page h1 {
         font-size: 2.5rem;
         letter-spacing: 1.5px;
     }
 
-    .logo img {
+    .home-page .logo img {
         width: 50px;
         margin-bottom: 15px;
     }
 
-    p {
+    .home-page p {
         font-size: 0.95rem;
         line-height: 1.6;
         margin: 20px auto;
         padding: 0 15px;
     }
 
-    .next-btn {
+    .home-page .next-btn {
         padding: 10px 28px;
         font-size: 1rem;
     }
@@ -121,28 +118,28 @@ p {
 
 /* Small Mobile (≤576px) */
 @media (max-width: 576px) {
-    h1 {
+    .home-page h1 {
         font-size: 2rem;
         letter-spacing: 1px;
     }
 
-    .logo img {
+    .home-page .logo img {
         width: 45px;
         margin-bottom: 12px;
     }
 
-    p {
+    .home-page p {
         font-size: 0.9rem;
         line-height: 1.5;
         margin: 15px auto;
     }
 
-    .next-btn {
+    .home-page .next-btn {
         padding: 10px 24px;
         font-size: 0.95rem;
     }
 
-    #intro {
+    .home-page #intro {
         padding: 20px 10px;
     }
 }

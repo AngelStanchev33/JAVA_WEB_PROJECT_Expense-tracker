@@ -1,9 +1,4 @@
- /* styles.css - Main stylesheet that imports all component styles */
+/* styles.css - Main stylesheet */
 
-/* Bootstrap 5 */
-@import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-
-/* Custom styles */
-@import url('home.css');
-@import url('login.css');
-@import url('register.css');
+/* Global styles (if needed) */
+/* CSS imports are now handled per-view in JS files via Vite */

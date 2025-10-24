@@ -1,7 +1,9 @@
 package com.example.expense_tracker.service.impl;
 
 import com.example.expense_tracker.exception.CategoryNotFoundException;
+import com.example.expense_tracker.exception.UserNotFoundException;
 import com.example.expense_tracker.model.dto.RegisterRequestDto;
+import com.example.expense_tracker.model.dto.UserDto;
 import com.example.expense_tracker.model.entity.UserEntity;
 import com.example.expense_tracker.model.entity.UserRoleEntity;
 import com.example.expense_tracker.model.enums.UserRoleEnum;
@@ -96,6 +98,19 @@ public class UserServiceImpl implements UserService {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         return auth;
+    }
+
+    @Override
+    public UserDto getCurrentUser(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+
+        return new UserDto(
+                user.getEmail(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getImageUrl()
+        );
     }
 
     private void publishUserRegisteredEvent(RegisterRequestDto requestDto) {
